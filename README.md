@@ -146,6 +146,11 @@ This application uses pattern markers from AR.js. You can:
 - `markers/pattern-marker1.patt` - For attractions marked with marker1
 - `markers/pattern-marker2.patt` - For attractions marked with marker2
 
+### AR from Sample Video (no camera)
+1. Add a short test video at `assets/sample-marker-video.mp4` that clearly shows your AR marker
+2. Click **“AR from Sample Video”** on the main menu
+3. The AR scene will use the video as input to detect the marker
+
 ## Project Structure
 
 ```
@@ -203,6 +208,13 @@ Edit the AR scene in `index.html` to add custom 3D models:
 **Note**: HTTPS is required for camera access on most browsers. Use `localhost` for development.
 
 ## Troubleshooting
+
+### Ubuntu Firefox: MediaDevices API not supported
+- Use **Demo Mode (No Camera)** or **AR from Sample Video** on the main menu
+- Ensure you're running on `http://localhost` or HTTPS (not file://)
+- Check site permissions (lock icon) and allow Camera and Location
+- Optional dev-only setting: in `about:config`, set `media.devices.insecure.enabled` = true for non-HTTPS testing
+- Try latest Firefox or Chrome
 
 ### Camera not working
 - Ensure HTTPS or localhost is used

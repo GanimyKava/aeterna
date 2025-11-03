@@ -346,7 +346,12 @@ function showLocationBased() {
 // AR Functions
 function startAR() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert('Your browser does not support camera access. Please use a modern browser with camera permissions enabled.');
+        const choice = confirm('Camera API not available. Use Demo Mode instead? (Cancel = try AR from sample video)');
+        if (choice) {
+            startDemoMode();
+        } else {
+            startARWithVideo();
+        }
         return;
     }
     
@@ -358,6 +363,18 @@ function startAR() {
         const scene = document.getElementById('ar-scene');
         if (scene) {
             scene.setAttribute('arjs', 'sourceType: webcam; videoTexture: true; debugUIEnabled: false;');
+        }
+    }, 100);
+}
+
+// AR from sample video (no camera required)
+function startARWithVideo() {
+    showScreen('ar-screen');
+    setTimeout(() => {
+        const scene = document.getElementById('ar-scene');
+        if (scene) {
+            // Use a local video file that shows the marker for testing
+            scene.setAttribute('arjs', 'sourceType: video; sourceUrl: assets/sample-marker-video.mp4; debugUIEnabled: false;');
         }
     }, 100);
 }
