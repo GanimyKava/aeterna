@@ -16,7 +16,7 @@ Get up and running with Echoes of Eternity AR in 5 minutes!
 
 **Option A: Using the script (Linux/Mac)**
 ```bash
-./start-server.sh
+./start-server.sh --https
 ```
 
 **Option B: Using Python**

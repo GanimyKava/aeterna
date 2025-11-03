@@ -24,10 +24,6 @@
                     <span class="icon">🎯</span>
                     <span>Start AR Experience</span>
                 </button>
-                <button class="menu-btn" onclick="startARWithVideo()">
-                    <span class="icon">🎥</span>
-                    <span>AR from Sample Video</span>
-                </button>
                 <button class="menu-btn" onclick="showLocationBased()">
                     <span class="icon">🗺️</span>
                     <span>Nearby Places</span>
@@ -35,14 +31,6 @@
                 <button class="menu-btn" onclick="showSettings()">
                     <span class="icon">⚙️</span>
                     <span>Settings</span>
-                </button>
-                <button class="menu-btn demo-btn" onclick="startDemoMode()">
-                    <span class="icon">🎬</span>
-                    <span>Demo Mode (No Camera)</span>
-                </button>
-                <button class="menu-btn" onclick="startVRMode()">
-                    <span class="icon">🕶️</span>
-                    <span>VR Mode (Immersive)</span>
                 </button>
             </div>
         </div>
@@ -57,45 +45,6 @@
         </div>
     </div>
 
-    <!-- VR Mode Screen (Immersive WebXR) -->
-    <div id="vr-screen" class="screen">
-        <div class="vr-container">
-            <div class="vr-controls">
-                <button class="close-ar-btn" onclick="exitVRMode()">✕</button>
-                <h3 class="vr-title">VR Mode - Historical Reconstruction</h3>
-                <select id="vr-attraction-select" class="vr-select" onchange="loadVRAttraction(this.value)">
-                    <option value="">-- Choose an Attraction --</option>
-                </select>
-                <div class="vr-hint">
-                    <p>💡 Click the "Enter VR" button in the scene to immerse.</p>
-                    <p>Works on VR headsets and compatible mobile/desktop browsers.</p>
-                </div>
-            </div>
-            <a-scene 
-                id="vr-scene"
-                renderer="logarithmicDepthBuffer: true; colorManagement: true;"
-                vr-mode-ui="enabled: true"
-                embedded>
-                
-                <!-- Environment and lighting -->
-                <a-sky color="#111822"></a-sky>
-                <a-light type="ambient" color="#ccccff" intensity="0.6"></a-light>
-                <a-light type="directional" position="1 2 1" intensity="0.6"></a-light>
-
-                <!-- Ground -->
-                <a-plane position="0 0 0" rotation="-90 0 0" width="40" height="40" color="#2a3340"></a-plane>
-
-                <!-- Content root populated by JS -->
-                <a-entity id="vr-content" position="0 0 0"></a-entity>
-
-                <!-- Camera rig -->
-                <a-entity id="rig" position="0 1.6 4">
-                    <a-entity camera look-controls wasd-controls="acceleration: 30"></a-entity>
-                </a-entity>
-            </a-scene>
-        </div>
-    </div>
-
     <!-- AR Scene -->
     <div id="ar-screen" class="screen">
         <div class="ar-overlay">
@@ -105,70 +54,37 @@
                 <p id="ar-description"></p>
                 <audio id="narration-audio" controls></audio>
             </div>
+            <div id="ar-status" style="position:absolute;left:16px;bottom:16px;background:rgba(0,0,0,0.6);color:#fff;padding:8px 12px;border-radius:8px;font-size:14px;display:none;"></div>
         </div>
         <a-scene 
             id="ar-scene"
             embedded 
-            arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
             vr-mode-ui="enabled: false"
             renderer="logarithmicDepthBuffer: true; colorManagement: true;"
             gesture-detector>
+            <a-assets>
+                <video id="video1" playsinline webkit-playsinline crossorigin="anonymous"></video>
+                <video id="video2" playsinline webkit-playsinline crossorigin="anonymous"></video>
+            </a-assets>
             
             <!-- Marker-based AR -->
-            <a-marker id="marker1" type="pattern" url="markers/pattern-marker1.patt" 
+            <a-marker id="marker1" type="pattern" url="markers/pattern-SydneyOperaHouse.patt" 
                       raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;">
                 <a-box position="0 1 0" rotation="0 45 0" color="#4CC3D9" class="clickable" 
                        animation="property: rotation; to: 0 405 0; loop: true; dur: 4000"></a-box>
                 <a-text value="Historical Marker" align="center" position="0 1.5 0" color="#FFF" scale="2 2 2"></a-text>
+                <a-video id="marker1-video" src="#video1" width="2" height="1.125" position="0 1 0" rotation="0 0 0" visible="false"></a-video>
             </a-marker>
 
-            <a-marker id="marker2" type="pattern" url="markers/pattern-marker2.patt">
+            <a-marker id="marker2" type="pattern" url="markers/pattern-SydneyHarbourBridge.patt" emitevents="true">
                 <a-cylinder position="0 0.5 0" radius="0.5" height="1" color="#EF2D5E"></a-cylinder>
                 <a-text value="Ancient Site" align="center" position="0 1.5 0" color="#FFF" scale="2 2 2"></a-text>
+                <a-video id="marker2-video" src="#video2" width="2" height="1.125" position="0 1 0" rotation="0 0 0" visible="false"></a-video>
             </a-marker>
 
             <!-- Camera -->
             <a-entity camera></a-entity>
         </a-scene>
-    </div>
-
-    <!-- Demo Mode Screen (No Camera Required) -->
-    <div id="demo-screen" class="screen">
-        <div class="demo-container">
-            <div class="demo-controls">
-                <button class="close-ar-btn" onclick="exitDemoMode()">✕</button>
-                <h3 class="demo-title">Demo Mode - Select an Attraction</h3>
-                <select id="demo-attraction-select" class="demo-select" onchange="loadDemoAttraction(this.value)">
-                    <option value="">-- Choose an Attraction --</option>
-                </select>
-                <div class="demo-hint">
-                    <p>💡 This is demo mode - no camera or markers needed!</p>
-                    <p>Select an attraction above to see the AR experience.</p>
-                </div>
-            </div>
-            <a-scene 
-                id="demo-scene"
-                embedded
-                vr-mode-ui="enabled: false"
-                renderer="logarithmicDepthBuffer: true; colorManagement: true;">
-                
-                <!-- Demo Background -->
-                <a-sky color="#87CEEB"></a-sky>
-                <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
-                <a-light type="directional" position="1 1 1" intensity="0.5"></a-light>
-                
-                <!-- Demo 3D Content Container -->
-                <a-entity id="demo-content" position="0 0 -3"></a-entity>
-                
-                <!-- Camera -->
-                <a-entity camera look-controls wasd-controls="enabled: false" position="0 1.6 0"></a-entity>
-            </a-scene>
-            <div class="ar-info-panel active" id="demo-info-panel">
-                <h3 id="demo-title"></h3>
-                <p id="demo-description"></p>
-                <audio id="demo-audio" controls></audio>
-            </div>
-        </div>
     </div>
 
     <!-- Location-Based AR -->
