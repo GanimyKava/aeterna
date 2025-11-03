@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes of Eternity AR - Historical Tour Guide</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.4/aframe/build/aframe-ar.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main Menu -->
+    <div id="main-menu" class="screen active">
+        <div class="container">
+            <h1 class="app-title">Echoes of Eternity AR</h1>
+            <p class="subtitle">Discover History Through Augmented Reality</p>
+            
+            <div class="menu-options">
+                <button class="menu-btn" onclick="showAttractions()">
+                    <span class="icon">📍</span>
+                    <span>Browse Attractions</span>
+                </button>
+                <button class="menu-btn" onclick="startAR()">
+                    <span class="icon">🎯</span>
+                    <span>Start AR Experience</span>
+                </button>
+                <button class="menu-btn" onclick="showLocationBased()">
+                    <span class="icon">🗺️</span>
+                    <span>Nearby Places</span>
+                </button>
+                <button class="menu-btn" onclick="showSettings()">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attractions List -->
+    <div id="attractions-screen" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Historical Attractions</h2>
+            <div id="attractions-list" class="attractions-grid"></div>
+        </div>
+    </div>
+
+    <!-- AR Scene -->
+    <div id="ar-screen" class="screen">
+        <div class="ar-overlay">
+            <button class="close-ar-btn" onclick="exitAR()">✕</button>
+            <div class="ar-info-panel" id="ar-info-panel">
+                <h3 id="ar-title"></h3>
+                <p id="ar-description"></p>
+                <audio id="narration-audio" controls></audio>
+            </div>
+        </div>
+        <a-scene 
+            id="ar-scene"
+            embedded 
+            arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+            vr-mode-ui="enabled: false"
+            renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+            gesture-detector>
+            
+            <!-- Marker-based AR -->
+            <a-marker id="marker1" type="pattern" url="markers/pattern-marker1.patt" 
+                      raycaster="objects: .clickable" emitevents="true" cursor="fuse: false; rayOrigin: mouse;">
+                <a-box position="0 1 0" rotation="0 45 0" color="#4CC3D9" class="clickable" 
+                       animation="property: rotation; to: 0 405 0; loop: true; dur: 4000"></a-box>
+                <a-text value="Historical Marker" align="center" position="0 1.5 0" color="#FFF" scale="2 2 2"></a-text>
+            </a-marker>
+
+            <a-marker id="marker2" type="pattern" url="markers/pattern-marker2.patt">
+                <a-cylinder position="0 0.5 0" radius="0.5" height="1" color="#EF2D5E"></a-cylinder>
+                <a-text value="Ancient Site" align="center" position="0 1.5 0" color="#FFF" scale="2 2 2"></a-text>
+            </a-marker>
+
+            <!-- Camera -->
+            <a-entity camera></a-entity>
+        </a-scene>
+    </div>
+
+    <!-- Location-Based AR -->
+    <div id="location-screen" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Nearby Historical Places</h2>
+            <div id="location-status">
+                <p>Requesting location...</p>
+                <button onclick="requestLocation()" class="location-btn">Enable Location</button>
+            </div>
+            <div id="nearby-places" class="places-list"></div>
+        </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings-screen" class="screen">
+        <div class="container">
+            <button class="back-btn" onclick="showMainMenu()">← Back</button>
+            <h2>Settings</h2>
+            <div class="settings-group">
+                <label>
+                    <input type="checkbox" id="audio-enabled" checked> Enable Audio Narration
+                </label>
+                <label>
+                    <input type="checkbox" id="vibration-enabled" checked> Enable Haptic Feedback
+                </label>
+                <label>
+                    Language:
+                    <select id="language-select">
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="de">German</option>
+                    </select>
+                </label>
+                <label>
+                    Audio Volume:
+                    <input type="range" id="volume-slider" min="0" max="100" value="70">
+                    <span id="volume-value">70%</span>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,402 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    overflow: hidden;
+}
+
+.screen {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Main Menu */
+#main-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.container {
+    max-width: 600px;
+    width: 90%;
+    padding: 20px;
+}
+
+.app-title {
+    font-size: 3rem;
+    color: #fff;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-weight: 700;
+}
+
+.subtitle {
+    text-align: center;
+    color: rgba(255,255,255,0.9);
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+}
+
+.menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.menu-btn {
+    background: rgba(255,255,255,0.95);
+    border: none;
+    padding: 20px 30px;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.menu-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    background: #fff;
+}
+
+.menu-btn:active {
+    transform: translateY(0);
+}
+
+.menu-btn .icon {
+    font-size: 1.5rem;
+}
+
+/* Attractions Screen */
+#attractions-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-y: auto;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.9);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-bottom: 20px;
+    color: #667eea;
+    font-weight: 600;
+}
+
+.back-btn:hover {
+    background: #fff;
+}
+
+#attractions-screen h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.attractions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.attraction-card {
+    background: rgba(255,255,255,0.95);
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.attraction-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.attraction-card h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.3rem;
+}
+
+.attraction-card p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.attraction-card .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.attraction-card .card-badge {
+    display: inline-block;
+    background: #667eea;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+/* AR Screen */
+#ar-screen {
+    background: #000;
+}
+
+#ar-scene {
+    width: 100%;
+    height: 100%;
+}
+
+.ar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.close-ar-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    pointer-events: auto;
+    color: #333;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+.close-ar-btn:hover {
+    background: #fff;
+    transform: scale(1.1);
+}
+
+.ar-info-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    pointer-events: auto;
+    max-height: 40vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    display: none;
+}
+
+.ar-info-panel.active {
+    display: block;
+}
+
+.ar-info-panel h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+.ar-info-panel p {
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.ar-info-panel audio {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Location Screen */
+#location-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-y: auto;
+}
+
+#location-screen h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+#location-status {
+    background: rgba(255,255,255,0.9);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.location-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.location-btn:hover {
+    background: #5568d3;
+}
+
+.places-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.place-item {
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.place-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.place-item h4 {
+    color: #667eea;
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+}
+
+.place-item .distance {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+
+/* Settings Screen */
+#settings-screen {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow-y: auto;
+}
+
+#settings-screen h2 {
+    color: #fff;
+    margin-bottom: 20px;
+    font-size: 2rem;
+}
+
+.settings-group {
+    background: rgba(255,255,255,0.95);
+    padding: 30px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.settings-group label {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.1rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.settings-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.settings-group select {
+    padding: 8px 15px;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+    font-size: 1rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.settings-group input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+}
+
+#volume-value {
+    min-width: 50px;
+    text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-title {
+        font-size: 2rem;
+    }
+    
+    .attractions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .ar-info-panel {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        max-height: 50vh;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
