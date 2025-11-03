@@ -323,6 +323,68 @@ body {
     max-width: calc(100% - 360px);
 }
 
+/* VR Screen */
+#vr-screen {
+    background: #0b1220;
+}
+
+.vr-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.vr-controls {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 320px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.vr-title {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.vr-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    cursor: pointer;
+    background: white;
+}
+
+.vr-hint {
+    background: #e7f3ff;
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #2196F3;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+#vr-scene {
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 768px) {
+    .vr-controls {
+        max-width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+    }
+}
+
 @media (max-width: 768px) {
     .demo-controls {
         max-width: calc(100% - 40px);

@@ -36,6 +36,10 @@
                     <span class="icon">🎬</span>
                     <span>Demo Mode (No Camera)</span>
                 </button>
+                <button class="menu-btn" onclick="startVRMode()">
+                    <span class="icon">🕶️</span>
+                    <span>VR Mode (Immersive)</span>
+                </button>
             </div>
         </div>
     </div>
@@ -46,6 +50,45 @@
             <button class="back-btn" onclick="showMainMenu()">← Back</button>
             <h2>Historical Attractions</h2>
             <div id="attractions-list" class="attractions-grid"></div>
+        </div>
+    </div>
+
+    <!-- VR Mode Screen (Immersive WebXR) -->
+    <div id="vr-screen" class="screen">
+        <div class="vr-container">
+            <div class="vr-controls">
+                <button class="close-ar-btn" onclick="exitVRMode()">✕</button>
+                <h3 class="vr-title">VR Mode - Historical Reconstruction</h3>
+                <select id="vr-attraction-select" class="vr-select" onchange="loadVRAttraction(this.value)">
+                    <option value="">-- Choose an Attraction --</option>
+                </select>
+                <div class="vr-hint">
+                    <p>💡 Click the "Enter VR" button in the scene to immerse.</p>
+                    <p>Works on VR headsets and compatible mobile/desktop browsers.</p>
+                </div>
+            </div>
+            <a-scene 
+                id="vr-scene"
+                renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+                vr-mode-ui="enabled: true"
+                embedded>
+                
+                <!-- Environment and lighting -->
+                <a-sky color="#111822"></a-sky>
+                <a-light type="ambient" color="#ccccff" intensity="0.6"></a-light>
+                <a-light type="directional" position="1 2 1" intensity="0.6"></a-light>
+
+                <!-- Ground -->
+                <a-plane position="0 0 0" rotation="-90 0 0" width="40" height="40" color="#2a3340"></a-plane>
+
+                <!-- Content root populated by JS -->
+                <a-entity id="vr-content" position="0 0 0"></a-entity>
+
+                <!-- Camera rig -->
+                <a-entity id="rig" position="0 1.6 4">
+                    <a-entity camera look-controls wasd-controls="acceleration: 30"></a-entity>
+                </a-entity>
+            </a-scene>
         </div>
     </div>
 

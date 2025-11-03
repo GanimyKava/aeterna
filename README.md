@@ -7,6 +7,7 @@ An immersive Augmented Reality application that brings history to life for touri
 ### 🎯 Core Functionality
 - **Marker-Based AR**: Point your camera at AR markers to see 3D historical reconstructions
 - **Demo Mode**: Test the app without camera or markers - perfect for presentations and demos!
+- **VR Mode (WebXR)**: Immerse yourself in a virtual reconstruction of attractions
 - **Audio Narration**: Listen to detailed historical information about each attraction
 - **Location-Based Discovery**: Find nearby historical attractions using GPS
 - **Interactive 3D Models**: View animated 3D representations of historical monuments
@@ -72,6 +73,18 @@ An immersive Augmented Reality application that brings history to life for touri
    - Allow camera and location permissions when prompted
 
 ## Usage Guide
+
+### VR Mode (Immersive WebXR)
+
+1. Click **"VR Mode (Immersive)"** from the main menu
+2. Pick an attraction from the dropdown
+3. Click the **Enter VR** button in the scene UI (A-Frame/WebXR button)
+4. Navigate using your headset or mouse/keyboard (WASD) on desktop
+
+Notes:
+- Requires a WebXR-capable browser/device for headset VR
+- Works on desktop/mobile without a headset using orbit/keyboard controls
+- Content is a stylized reconstruction; replace with GLTF models as needed
 
 ### Demo Mode (No Camera Required)
 

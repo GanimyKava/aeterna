@@ -729,6 +729,150 @@ function createDemo3DModel(attraction) {
     }
 }
 
+// VR Mode Functions (Immersive)
+function startVRMode() {
+    showScreen('vr-screen');
+
+    // Populate VR selector
+    const select = document.getElementById('vr-attraction-select');
+    if (select) {
+        select.innerHTML = '<option value="">-- Choose an Attraction --</option>' +
+            attractions.map(attraction => 
+                `<option value="${attraction.id}">${attraction.icon} ${attraction.name}</option>`
+            ).join('');
+    }
+
+    // Prepare base VR scene
+    clearVRContent();
+}
+
+function exitVRMode() {
+    clearVRContent();
+    showMainMenu();
+}
+
+function clearVRContent() {
+    const content = document.getElementById('vr-content');
+    if (content) content.innerHTML = '';
+}
+
+function loadVRAttraction(attractionId) {
+    if (!attractionId) {
+        clearVRContent();
+        return;
+    }
+
+    const attraction = attractions.find(a => a.id == attractionId);
+    if (!attraction) return;
+
+    createVRReconstruction(attraction);
+}
+
+function createVRReconstruction(attraction) {
+    const content = document.getElementById('vr-content');
+    if (!content) return;
+
+    // Reset content
+    content.innerHTML = '';
+
+    // Common elements
+    const title = document.createElement('a-text');
+    title.setAttribute('value', attraction.name);
+    title.setAttribute('align', 'center');
+    title.setAttribute('position', '0 3 -4');
+    title.setAttribute('color', '#ffffff');
+    title.setAttribute('scale', '3 3 3');
+
+    const subtitle = document.createElement('a-text');
+    subtitle.setAttribute('value', attraction.year);
+    subtitle.setAttribute('align', 'center');
+    subtitle.setAttribute('position', '0 2.5 -4');
+    subtitle.setAttribute('color', '#ffc107');
+    subtitle.setAttribute('scale', '2 2 2');
+
+    // Simple reconstruction primitives
+    let centerpiece;
+    if (attraction.icon === '🎭' || attraction.icon === '🏛️' || attraction.icon === '🏰') {
+        centerpiece = document.createElement('a-box');
+        centerpiece.setAttribute('position', '0 1 -4');
+        centerpiece.setAttribute('depth', '3');
+        centerpiece.setAttribute('height', '2');
+        centerpiece.setAttribute('width', '4');
+        centerpiece.setAttribute('color', '#3f8abf');
+        centerpiece.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 12000');
+    } else if (attraction.icon === '🌉') {
+        centerpiece = document.createElement('a-torus');
+        centerpiece.setAttribute('position', '0 1.2 -4');
+        centerpiece.setAttribute('radius', '2');
+        centerpiece.setAttribute('radius-tubular', '0.2');
+        centerpiece.setAttribute('rotation', '90 0 0');
+        centerpiece.setAttribute('color', '#ffd166');
+    } else if (attraction.icon === '🪨' || attraction.icon === '🌊') {
+        centerpiece = document.createElement('a-sphere');
+        centerpiece.setAttribute('position', '0 1.2 -4');
+        centerpiece.setAttribute('radius', '1.2');
+        centerpiece.setAttribute('color', '#ef476f');
+        centerpiece.setAttribute('animation', 'property: position; to: 0 1.5 -4; dir: alternate; loop: true; dur: 3000');
+    } else if (attraction.icon === '🐠' || attraction.icon === '⛵') {
+        centerpiece = document.createElement('a-plane');
+        centerpiece.setAttribute('position', '0 0 -4');
+        centerpiece.setAttribute('rotation', '-90 0 0');
+        centerpiece.setAttribute('width', '8');
+        centerpiece.setAttribute('height', '8');
+        centerpiece.setAttribute('color', '#118ab2');
+        centerpiece.setAttribute('animation', 'property: rotation; to: -90 360 0; loop: true; dur: 15000');
+    } else if (attraction.icon === '🦘' || attraction.icon === '🦋') {
+        centerpiece = document.createElement('a-icosahedron');
+        centerpiece.setAttribute('position', '0 1.2 -4');
+        centerpiece.setAttribute('radius', '1');
+        centerpiece.setAttribute('color', '#06d6a0');
+        centerpiece.setAttribute('animation', 'property: scale; from: 1 1 1; to: 1.3 1.3 1.3; loop: true; dir: alternate; dur: 3000');
+    } else {
+        centerpiece = document.createElement('a-box');
+        centerpiece.setAttribute('position', '0 1 -4');
+        centerpiece.setAttribute('depth', '2');
+        centerpiece.setAttribute('height', '2');
+        centerpiece.setAttribute('width', '2');
+        centerpiece.setAttribute('color', '#9c27b0');
+        centerpiece.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 8000');
+    }
+
+    // Informational billboard
+    const board = document.createElement('a-plane');
+    board.setAttribute('position', '0 1.2 -2');
+    board.setAttribute('rotation', '0 0 0');
+    board.setAttribute('width', '3.5');
+    board.setAttribute('height', '1.5');
+    board.setAttribute('color', '#263238');
+    board.setAttribute('opacity', '0.9');
+
+    const boardText = document.createElement('a-text');
+    boardText.setAttribute('value', attraction.description);
+    boardText.setAttribute('position', '-1.6 0.4 -2');
+    boardText.setAttribute('wrap-count', '30');
+    boardText.setAttribute('width', '3.2');
+    boardText.setAttribute('color', '#e0f7fa');
+
+    // Add ambient particles
+    for (let i = 0; i < 20; i++) {
+        const p = document.createElement('a-sphere');
+        p.setAttribute('radius', '0.03');
+        p.setAttribute('color', '#ffffff');
+        const x = (Math.random() - 0.5) * 8;
+        const y = Math.random() * 3 + 0.5;
+        const z = - (Math.random() * 8 + 2);
+        p.setAttribute('position', `${x} ${y} ${z}`);
+        p.setAttribute('animation', `property: position; to: ${x} ${y + 0.8} ${z}; dir: alternate; loop: true; dur: ${2000 + Math.random()*2000}`);
+        content.appendChild(p);
+    }
+
+    content.appendChild(title);
+    content.appendChild(subtitle);
+    content.appendChild(centerpiece);
+    content.appendChild(board);
+    content.appendChild(boardText);
+}
+
 // Export functions to global scope for inline event handlers
 window.showMainMenu = showMainMenu;
 window.showAttractions = showAttractions;
