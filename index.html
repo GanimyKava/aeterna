@@ -32,6 +32,10 @@
                     <span class="icon">⚙️</span>
                     <span>Settings</span>
                 </button>
+                <button class="menu-btn demo-btn" onclick="startDemoMode()">
+                    <span class="icon">🎬</span>
+                    <span>Demo Mode (No Camera)</span>
+                </button>
             </div>
         </div>
     </div>
@@ -79,6 +83,45 @@
             <!-- Camera -->
             <a-entity camera></a-entity>
         </a-scene>
+    </div>
+
+    <!-- Demo Mode Screen (No Camera Required) -->
+    <div id="demo-screen" class="screen">
+        <div class="demo-container">
+            <div class="demo-controls">
+                <button class="close-ar-btn" onclick="exitDemoMode()">✕</button>
+                <h3 class="demo-title">Demo Mode - Select an Attraction</h3>
+                <select id="demo-attraction-select" class="demo-select" onchange="loadDemoAttraction(this.value)">
+                    <option value="">-- Choose an Attraction --</option>
+                </select>
+                <div class="demo-hint">
+                    <p>💡 This is demo mode - no camera or markers needed!</p>
+                    <p>Select an attraction above to see the AR experience.</p>
+                </div>
+            </div>
+            <a-scene 
+                id="demo-scene"
+                embedded
+                vr-mode-ui="enabled: false"
+                renderer="logarithmicDepthBuffer: true; colorManagement: true;">
+                
+                <!-- Demo Background -->
+                <a-sky color="#87CEEB"></a-sky>
+                <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
+                <a-light type="directional" position="1 1 1" intensity="0.5"></a-light>
+                
+                <!-- Demo 3D Content Container -->
+                <a-entity id="demo-content" position="0 0 -3"></a-entity>
+                
+                <!-- Camera -->
+                <a-entity camera look-controls wasd-controls="enabled: false" position="0 1.6 0"></a-entity>
+            </a-scene>
+            <div class="ar-info-panel active" id="demo-info-panel">
+                <h3 id="demo-title"></h3>
+                <p id="demo-description"></p>
+                <audio id="demo-audio" controls></audio>
+            </div>
+        </div>
     </div>
 
     <!-- Location-Based AR -->

@@ -92,6 +92,17 @@ body {
     font-size: 1.5rem;
 }
 
+.demo-btn {
+    background: rgba(255,193,7,0.95) !important;
+    color: #333 !important;
+    border: 2px solid #ffc107;
+}
+
+.demo-btn:hover {
+    background: #ffc107 !important;
+    transform: translateY(-2px);
+}
+
 /* Attractions Screen */
 #attractions-screen {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -243,6 +254,88 @@ body {
 .ar-info-panel audio {
     width: 100%;
     margin-top: 10px;
+}
+
+/* Demo Mode Screen */
+#demo-screen {
+    background: #000;
+    position: relative;
+}
+
+.demo-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.demo-controls {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(255,255,255,0.95);
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 300px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.demo-title {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+}
+
+.demo-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    cursor: pointer;
+    background: white;
+}
+
+.demo-hint {
+    background: #e7f3ff;
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #2196F3;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.demo-hint p {
+    margin: 5px 0;
+}
+
+#demo-scene {
+    width: 100%;
+    height: 100%;
+}
+
+#demo-info-panel {
+    position: absolute;
+    bottom: 20px;
+    left: 340px;
+    right: 20px;
+    max-width: calc(100% - 360px);
+}
+
+@media (max-width: 768px) {
+    .demo-controls {
+        max-width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+    }
+    
+    #demo-info-panel {
+        left: 20px;
+        right: 20px;
+        max-width: calc(100% - 40px);
+        bottom: 10px;
+    }
 }
 
 /* Location Screen */

@@ -6,6 +6,7 @@ An immersive Augmented Reality application that brings history to life for touri
 
 ### 🎯 Core Functionality
 - **Marker-Based AR**: Point your camera at AR markers to see 3D historical reconstructions
+- **Demo Mode**: Test the app without camera or markers - perfect for presentations and demos!
 - **Audio Narration**: Listen to detailed historical information about each attraction
 - **Location-Based Discovery**: Find nearby historical attractions using GPS
 - **Interactive 3D Models**: View animated 3D representations of historical monuments
@@ -71,6 +72,22 @@ An immersive Augmented Reality application that brings history to life for touri
    - Allow camera and location permissions when prompted
 
 ## Usage Guide
+
+### Demo Mode (No Camera Required)
+
+Perfect for presentations, testing, or when camera access isn't available:
+
+1. Click **"Demo Mode (No Camera)"** from the main menu
+2. Select an attraction from the dropdown
+3. View the 3D model, historical information, and audio narration
+4. No camera, markers, or special permissions needed!
+
+**Great for:**
+- Presentations and demos
+- Testing the app interface
+- Devices without camera access
+- Quick previews of attractions
+- Teaching/showcasing the AR concept
 
 ### Starting an AR Experience
 
