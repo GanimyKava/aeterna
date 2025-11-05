@@ -23,6 +23,27 @@ body {
     margin-bottom: 40px;
 }
 
+#tap-to-start {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 10000;
+}
+
+#tap-to-start #tap-button {
+    appearance: none;
+    border: none;
+    background: #ffffff;
+    color: #222;
+    font-size: 1rem;
+    padding: 12px 18px;
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+}
+
 .arjs-loader {
     height: 100%;
     width: 100%;
@@ -65,6 +86,10 @@ body {
     .subtitle {
         font-size: 1rem;
     }
+
+    /* Reduce header space on mobile */
+    .app-title { margin-bottom: 6px; }
+    .subtitle { margin-bottom: 12px; }
 }
 
 @media (min-width: 769px) {

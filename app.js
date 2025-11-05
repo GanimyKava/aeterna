@@ -34,6 +34,7 @@ window.onload = function () {
 
             const assetsEl = document.getElementById('dynamic-assets');
             const markersContainer = document.getElementById('markers-container');
+            const gpsContainer = document.getElementById('gps-places-container');
 
             if (!Array.isArray(config?.items)) return;
 
@@ -52,6 +53,7 @@ window.onload = function () {
                 videoEl.setAttribute('crossorigin', 'anonymous');
                 videoEl.setAttribute('webkit-playsinline', '');
                 videoEl.setAttribute('playsinline', '');
+                videoEl.setAttribute('muted', '');
                 assetsEl.appendChild(videoEl);
 
                 // Create <a-nft> marker
@@ -60,6 +62,9 @@ window.onload = function () {
                 markerEl.setAttribute('type', 'nft');
                 markerEl.setAttribute('url', item.nftBaseUrl);
                 markerEl.setAttribute('smooth', 'true');
+                markerEl.setAttribute('smoothCount', '10');
+                markerEl.setAttribute('smoothTolerance', '0.01');
+                markerEl.setAttribute('smoothThreshold', '5');
                 markerEl.setAttribute('emitevents', 'true');
                 markerEl.setAttribute('id', 'nft-' + idSafe);
 
@@ -75,12 +80,132 @@ window.onload = function () {
 
                 markerEl.appendChild(aVideo);
                 markersContainer.appendChild(markerEl);
+
+                // Create location-based AR entity if coordinates provided
+                if (typeof item.latitude === 'number' && typeof item.longitude === 'number') {
+                    const placeEl = document.createElement('a-entity');
+                    placeEl.setAttribute('gps-entity-place', `latitude: ${item.latitude}; longitude: ${item.longitude}`);
+                    placeEl.setAttribute('id', 'geo-' + idSafe);
+
+                    const geoVideo = document.createElement('a-video');
+                    geoVideo.setAttribute('src', '#' + videoId);
+                    geoVideo.setAttribute('width', item.videoWidth || '300');
+                    geoVideo.setAttribute('height', item.videoHeight || '175');
+                    // For geo, orient upright and face the user camera by default
+                    geoVideo.setAttribute('rotation', '0 180 0');
+                    geoVideo.setAttribute('class', 'geo-video-plane');
+                    geoVideo.setAttribute('visible', 'false');
+
+                    placeEl.appendChild(geoVideo);
+                    gpsContainer.appendChild(placeEl);
+                }
             });
+
+            // If any geo items exist, start geolocation watcher to auto-activate videos
+            const hasGeo = config.items.some(function (item) { return typeof item.latitude === 'number' && typeof item.longitude === 'number'; });
+            if (hasGeo && navigator.geolocation) {
+                const itemsById = {};
+                const geoActive = {}; // track active state per item to avoid flapping
+                config.items.forEach(function (item) { itemsById[item.id] = item; });
+
+                const toRad = function (value) { return value * Math.PI / 180; };
+                const distanceMeters = function (lat1, lon1, lat2, lon2) {
+                    const R = 6371000; // meters
+                    const dLat = toRad(lat2 - lat1);
+                    const dLon = toRad(lon2 - lon1);
+                    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                    return R * c;
+                };
+
+                navigator.geolocation.watchPosition(function (pos) {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+
+                    config.items.forEach(function (item) {
+                        if (typeof item.latitude !== 'number' || typeof item.longitude !== 'number') return;
+                        const radius = typeof item.radiusMeters === 'number' ? item.radiusMeters : 100;
+                        const hysteresis = Math.max(10, Math.min(50, Math.round(radius * 0.1))); // 10% buffer (10-50m)
+                        const dist = distanceMeters(lat, lon, item.latitude, item.longitude);
+
+                        const videoId = 'vid-' + item.id;
+                        const videoElement = document.getElementById(videoId);
+                        const geoPlane = document.querySelector('#geo-' + item.id + ' .geo-video-plane');
+                        if (!videoElement || !geoPlane) return;
+
+                        const currentlyActive = !!geoActive[item.id];
+                        if (!currentlyActive && dist <= radius) {
+                            geoActive[item.id] = true;
+                            geoPlane.setAttribute('visible', true);
+                            if (videoElement.paused) { videoElement.play(); }
+                        } else if (currentlyActive && dist > (radius + hysteresis)) {
+                            geoActive[item.id] = false;
+                            geoPlane.setAttribute('visible', false);
+                            if (!videoElement.paused) {
+                                videoElement.pause();
+                                videoElement.currentTime = 0;
+                            }
+                        }
+                    });
+                }, function (err) {
+                    console.warn('Geolocation error:', err);
+                }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
+            }
         } catch (e) {
             // Fail silently to avoid crashing the AR scene in case of fetch errors
             // Consider logging to console for development
             console.error('Failed to load NFT config:', e);
         }
+    })();
+
+    // Mobile: provide a tap-to-unmute overlay (autoplay policies)
+    (function setupMobileAudioGate() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (!isMobile) return;
+        const overlay = document.getElementById('tap-to-start');
+        const button = document.getElementById('tap-button');
+        if (!overlay || !button) return;
+        overlay.style.display = 'flex';
+
+        const enableSound = function () {
+            overlay.style.display = 'none';
+            const videos = document.querySelectorAll('video');
+            videos.forEach(function (v) {
+                try { v.muted = false; } catch (e) {}
+                // If a plane is currently visible, try to resume playback
+                const plane = document.querySelector(`[src="#${v.id}"]`);
+                if (plane && plane.getAttribute && plane.getAttribute('visible')) {
+                    v.play().catch(function () {});
+                }
+            });
+            window.removeEventListener('touchend', enableSound, { passive: true });
+        };
+
+        button.addEventListener('click', enableSound, { passive: true });
+        window.addEventListener('touchend', enableSound, { passive: true, once: true });
+    })();
+
+    // Ensure scene resizes correctly on orientation changes
+    (function handleOrientationResize() {
+        const triggerResize = function () {
+            try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+            // If any video planes are visible, ensure their media keeps playing
+            const videos = document.querySelectorAll('video');
+            videos.forEach(function (v) {
+                const plane = document.querySelector(`[src="#${v.id}"]`);
+                if (plane && plane.getAttribute && plane.getAttribute('visible')) {
+                    v.play().catch(function () {});
+                }
+            });
+        };
+        window.addEventListener('orientationchange', function () {
+            setTimeout(triggerResize, 150);
+        });
+        window.addEventListener('resize', function () {
+            setTimeout(triggerResize, 150);
+        });
     })();
 };
 

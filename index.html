@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title>Echoes of Eternity AR - Historical Tour Guide</title>
     <script src="https://cdn.jsdelivr.net/npm/aframe@1.6.0/dist/aframe-master.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
@@ -17,6 +18,9 @@
     </div>
     <h1 class="app-title">Echoes of Eternity AR</h1>
     <p class="subtitle">Discover History Through Augmented Reality</p>
+    <div id="tap-to-start" style="display:none;">
+        <button id="tap-button">Tap to enable sound</button>
+    </div>
     <a-scene vr-mode-ui="enabled: false;" renderer='antialias: true; alpha: true; precision: medium;' embedded
         arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'
         mindar-image="imageTargetSrc: targets.mind; filterMinCF: 0.001; filterBeta: 10;">
@@ -24,7 +28,8 @@
         <a-assets id="dynamic-assets"></a-assets>
 
         <a-entity id="markers-container"></a-entity>
-        <a-entity camera></a-entity>
+        <a-entity id="gps-places-container"></a-entity>
+        <a-entity camera gps-camera rotation-reader gpsMinDistance="10" gpsTimeInterval="1500" positionMinAccuracy="30"></a-entity>
     </a-scene>
 </body>
 

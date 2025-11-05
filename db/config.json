@@ -4,19 +4,25 @@
             "id": "MCG_Australia",
             "nftBaseUrl": "assets/nfts/MCG_Australia",
             "videoSrc": "assets/videos/Sir-Don-Bradman_100-Century_SCG_15-11-1947.mp4",
-            "videoWidth": 300,
-            "videoHeight": 175,
-            "position": "0 0 0",
-            "rotation": "-90 0 0"
+            "videoWidth": 480,
+            "videoHeight": 270,
+            "position": "0 0.02 0",
+            "rotation": "-90 0 0",
+            "latitude": -37.8199,
+            "longitude": 144.9834,
+            "radiusMeters": 150
         },
         {
             "id": "Uluru_Australia",
             "nftBaseUrl": "assets/nfts/Uluru_Australia",
             "videoSrc": "assets/videos/TheGeologicOddity_Uluru_Australia.mp4",
-            "videoWidth": 300,
-            "videoHeight": 175,
-            "position": "0 0 0",
-            "rotation": "-90 0 0"
+            "videoWidth": 480,
+            "videoHeight": 270,
+            "position": "0 0.02 0",
+            "rotation": "-90 0 0",
+            "latitude": -25.3444,
+            "longitude": 131.0369,
+            "radiusMeters": 200
         }
     ]
 }
