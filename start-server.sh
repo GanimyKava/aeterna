@@ -11,11 +11,37 @@ echo ""
 MODE="https"
 PORT="8443"
 
+# Create certs directory if it doesn't exist
+mkdir -p certs
+
 # Ensure certs exist; generate self-signed if missing
 if [ ! -f certs/cert.pem ] || [ ! -f certs/key.pem ]; then
     if command -v openssl &> /dev/null; then
         echo "Generating self-signed certificate (certs/cert.pem, certs/key.pem) ..."
-        openssl req -x509 -newkey rsa:2048 -nodes -keyout certs/key.pem -out certs/cert.pem -days 365 -subj "/CN=localhost"
+        # Create config file for OpenSSL
+        cat > certs/openssl.cnf << EOF
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+
+[req_distinguished_name]
+CN = localhost
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = localhost
+IP.1 = 10.0.0.138
+EOF
+        # Generate certificate with the config
+        openssl req -x509 -newkey rsa:2048 -nodes \
+            -keyout certs/key.pem -out certs/cert.pem \
+            -days 365 -config certs/openssl.cnf
+
+        # Clean up config file
+        rm certs/openssl.cnf
     else
         echo "❌ openssl not found. Please install openssl or provide certs/cert.pem and certs/key.pem."
         exit 1
