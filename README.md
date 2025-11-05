@@ -23,6 +23,24 @@ Notes:
 - The current frontend includes a dummy REST call placeholder to illustrate the “request video download/QoD” trigger when a marker is detected.
 
 ## Simple Architecture
+
+```mermaid
+flowchart TD
+  U[User on Mobile Browser\n(HTTPS)] -->|Camera + Geolocation| FE[Index.html\nA-Frame + AR.js]
+  FE -->|Loads config| CFG[db/config.json]
+  FE -->|Loads scripts| JS[scripts/*.js]
+  FE -->|Loads styles| CSS[styles/app.css]
+  FE -->|Fetches videos/images| ASSETS[assets/**/*]
+
+  subgraph Optional Backend
+    BE[Backend API] -->|OAuth2 (Client Credentials)| OPGW[Operator Open Gateway]
+    BE -->|Device Location| LOC[CAMARA Device Location]
+    BE -->|QoS Session| QOD[CAMARA QoD]
+  end
+
+  FE -. optional .-> BE
+```
+
 - Frontend (this repo):
   - Static site (index.html) delivered via GitHub Pages/HTTPS.
   - A-Frame + AR.js for both NFT (image) and geo AR experiences.
@@ -47,6 +65,7 @@ Notes:
 - Serve over HTTPS (browsers require it for camera/geolocation).
 - Recommended: GitHub Pages or a local HTTPS dev server.
 - Assets are referenced with project-relative paths for Pages compatibility.
+- for local dev development use `./start-server.sh`
 
 ## Deploying to GitHub Pages
 - This repo includes a GitHub Actions workflow at `.github/workflows/deploy-pages.yml`.
