@@ -26,14 +26,14 @@ Notes:
 
 ```mermaid
 flowchart TD
-  U[Mobile App or Browser with HTTPS] -->|Camera + Geolocation| FE[Frontend (A-Frame + AR.js)]
+  U[Mobile App or Browser with HTTPS] -->|Camera + Geolocation| FE[Frontend A-Frame with AR.js]
   FE -->|Loads config| CFG[db/config.json]
   FE -->|Loads scripts| JS[scripts/*.js]
   FE -->|Loads styles| CSS[styles/app.css]
   FE -->|Fetches videos/images| ASSETS[assets/**/*]
 
   subgraph Optional Backend
-    BE[Backend API] -->|OAuth2 (Client Credentials)| OPGW[Operator Open Gateway]
+    BE[Backend API] -->|OAuth2 Client Credentials| OPGW[Operator Open Gateway]
     BE -->|Device Location| LOC[CAMARA Device Location]
     BE -->|QoS Session| QOD[CAMARA QoD]
   end
