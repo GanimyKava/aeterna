@@ -23,26 +23,9 @@ body {
     margin-bottom: 40px;
 }
 
-#tap-to-start {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 10000;
-}
+/* tap-to-start overlay removed */
 
-#tap-to-start #tap-button {
-    appearance: none;
-    border: none;
-    background: #ffffff;
-    color: #222;
-    font-size: 1rem;
-    padding: 12px 18px;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
-}
+/* request-play overlay removed */
 
 .arjs-loader {
     height: 100%;

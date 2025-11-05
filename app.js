@@ -14,6 +14,11 @@ window.onload = function () {
             if (!videoElement) return;
 
             markerEl.addEventListener('markerFound', function () {
+                // Lazy load video source on first activation
+                if (!videoElement.getAttribute('src') && videoElement.dataset && videoElement.dataset.src) {
+                    videoElement.setAttribute('src', videoElement.dataset.src);
+                    try { videoElement.load(); } catch (e) {}
+                }
                 videoPlane.setAttribute('visible', true);
                 videoElement.play();
             });
@@ -42,12 +47,13 @@ window.onload = function () {
                 const idSafe = String(item.id || '').trim();
                 if (!idSafe) return;
 
-                // Create <video> asset
+                // Create <video> asset (lazy: no src until activation)
                 const videoEl = document.createElement('video');
                 const videoId = 'vid-' + idSafe;
                 videoEl.setAttribute('id', videoId);
-                videoEl.setAttribute('src', item.videoSrc);
-                videoEl.setAttribute('preload', 'auto');
+                // Store target source for lazy loading
+                videoEl.setAttribute('data-src', item.videoSrc);
+                videoEl.setAttribute('preload', 'none');
                 videoEl.setAttribute('response-type', 'arraybuffer');
                 videoEl.setAttribute('loop', '');
                 videoEl.setAttribute('crossorigin', 'anonymous');
@@ -137,6 +143,10 @@ window.onload = function () {
 
                         const currentlyActive = !!geoActive[item.id];
                         if (!currentlyActive && dist <= radius) {
+                            if (!videoElement.getAttribute('src') && videoElement.dataset && videoElement.dataset.src) {
+                                videoElement.setAttribute('src', videoElement.dataset.src);
+                                try { videoElement.load(); } catch (e) {}
+                            }
                             geoActive[item.id] = true;
                             geoPlane.setAttribute('visible', true);
                             if (videoElement.paused) { videoElement.play(); }
@@ -160,32 +170,7 @@ window.onload = function () {
         }
     })();
 
-    // Mobile: provide a tap-to-unmute overlay (autoplay policies)
-    (function setupMobileAudioGate() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (!isMobile) return;
-        const overlay = document.getElementById('tap-to-start');
-        const button = document.getElementById('tap-button');
-        if (!overlay || !button) return;
-        overlay.style.display = 'flex';
-
-        const enableSound = function () {
-            overlay.style.display = 'none';
-            const videos = document.querySelectorAll('video');
-            videos.forEach(function (v) {
-                try { v.muted = false; } catch (e) {}
-                // If a plane is currently visible, try to resume playback
-                const plane = document.querySelector(`[src="#${v.id}"]`);
-                if (plane && plane.getAttribute && plane.getAttribute('visible')) {
-                    v.play().catch(function () {});
-                }
-            });
-            window.removeEventListener('touchend', enableSound, { passive: true });
-        };
-
-        button.addEventListener('click', enableSound, { passive: true });
-        window.addEventListener('touchend', enableSound, { passive: true, once: true });
-    })();
+    // Tap-to-unmute overlay removed; videos remain muted to satisfy autoplay policies
 
     // Ensure scene resizes correctly on orientation changes
     (function handleOrientationResize() {
