@@ -26,7 +26,7 @@ Notes:
 
 ```mermaid
 flowchart TD
-  U[Mobile Browser/ App (HTTPS)] -->|Camera + Geolocation| FE[Frontend (A-Frame + AR.js)]
+  U[Mobile App or Browser with HTTPS] -->|Camera + Geolocation| FE[Frontend (A-Frame + AR.js)]
   FE -->|Loads config| CFG[db/config.json]
   FE -->|Loads scripts| JS[scripts/*.js]
   FE -->|Loads styles| CSS[styles/app.css]
