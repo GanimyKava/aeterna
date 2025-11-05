@@ -21,23 +21,9 @@
         arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'
         mindar-image="imageTargetSrc: targets.mind; filterMinCF: 0.001; filterBeta: 10;">
 
-        <a-assets>
-            <video src="assets/videos/Sir-Don-Bradman_100-Century_SCG_15-11-1947.mp4" preload="auto" id="vid"
-                response-type="arraybuffer" loop crossorigin webkit-playsinline playsinline>
-            </video>
-        </a-assets>
+        <a-assets id="dynamic-assets"></a-assets>
 
-        <a-nft videohandler type='nft' url='assets/nfts/MCG_Australia' smooth="true" emitevents="true" id="nft-marker">
-            <!-- <a-video src="#vid" position='50 150 -100' rotation="90 0 180" width='300' height='175' id="video-plane"
-                visible="false">
-            </a-video> -->
-            <a-video src="#vid" width='300' height='175' position='0 0 0' rotation="-90 0 0" id="video-plane"
-                visible="false">
-            </a-video>
-
-
-
-        </a-nft>
+        <a-entity id="markers-container"></a-entity>
         <a-entity camera></a-entity>
     </a-scene>
 </body>

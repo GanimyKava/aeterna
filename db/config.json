@@ -1,0 +1,24 @@
+{
+    "items": [
+        {
+            "id": "MCG_Australia",
+            "nftBaseUrl": "assets/nfts/MCG_Australia",
+            "videoSrc": "assets/videos/Sir-Don-Bradman_100-Century_SCG_15-11-1947.mp4",
+            "videoWidth": 300,
+            "videoHeight": 175,
+            "position": "0 0 0",
+            "rotation": "-90 0 0"
+        },
+        {
+            "id": "Uluru_Australia",
+            "nftBaseUrl": "assets/nfts/Uluru_Australia",
+            "videoSrc": "assets/videos/TheGeologicOddity_Uluru_Australia.mp4",
+            "videoWidth": 300,
+            "videoHeight": 175,
+            "position": "0 0 0",
+            "rotation": "-90 0 0"
+        }
+    ]
+}
+
+
