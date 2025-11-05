@@ -1,6 +1,14 @@
 // Echoes of Eternity AR 
 window.onload = function () {
     // Component that binds a marker's found/lost to its child video plane and asset
+    const requestVideoDownload = function (payload) {
+        console.log('Requesting QoD video download API Call');
+        /*curl -H "Authorization: Bearer ACCESS_TOKEN" -H "Content-Type: application/json" \
+               -d '{ "flow": { "destinationIp": "203.0.113.10", "destinationPort": 443, "protocol": "TCP" }, "qodProfile":"interactiveVideo", "durationSeconds":600 }' \
+            https://opgw.example.com/camara/qod/v0/sessions
+        */        
+    };
+
     AFRAME.registerComponent('videohandler', {
         init: function () {
             const markerEl = this.el;
@@ -17,8 +25,10 @@ window.onload = function () {
                 // Lazy load video source on first activation
                 if (!videoElement.getAttribute('src') && videoElement.dataset && videoElement.dataset.src) {
                     videoElement.setAttribute('src', videoElement.dataset.src);
-                    try { videoElement.load(); } catch (e) {}
+                    try { videoElement.load(); } catch (e) { }
                 }
+                // Fire-and-forget dummy API to request video download
+                requestVideoDownload({ action: 'prefetch-video', markerId: markerEl.getAttribute('id'), videoId: videoId, videoSrc: videoElement.getAttribute('src') || videoElement.dataset?.src || null, timestamp: Date.now() });
                 videoPlane.setAttribute('visible', true);
                 videoElement.play();
             });
@@ -145,7 +155,7 @@ window.onload = function () {
                         if (!currentlyActive && dist <= radius) {
                             if (!videoElement.getAttribute('src') && videoElement.dataset && videoElement.dataset.src) {
                                 videoElement.setAttribute('src', videoElement.dataset.src);
-                                try { videoElement.load(); } catch (e) {}
+                                try { videoElement.load(); } catch (e) { }
                             }
                             geoActive[item.id] = true;
                             geoPlane.setAttribute('visible', true);
@@ -175,13 +185,13 @@ window.onload = function () {
     // Ensure scene resizes correctly on orientation changes
     (function handleOrientationResize() {
         const triggerResize = function () {
-            try { window.dispatchEvent(new Event('resize')); } catch (e) {}
+            try { window.dispatchEvent(new Event('resize')); } catch (e) { }
             // If any video planes are visible, ensure their media keeps playing
             const videos = document.querySelectorAll('video');
             videos.forEach(function (v) {
                 const plane = document.querySelector(`[src="#${v.id}"]`);
                 if (plane && plane.getAttribute && plane.getAttribute('visible')) {
-                    v.play().catch(function () {});
+                    v.play().catch(function () { });
                 }
             });
         };
