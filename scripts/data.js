@@ -22,18 +22,12 @@
       return './';
     }
     
-    // Special case: if pathname is exactly '/repo-name' or '/repo-name/index.html',
-    // we're at the repo root
+    // Special case: if we have only 1 part (repo name), we're at the repo root
+    // Since all HTML files are now in root, any HTML file should use './'
     if (parts.length === 1) {
-      // Check if this looks like the repo root page
-      if (pathname === `/${parts[0]}` || 
-          pathname === `/${parts[0]}/` ||
-          pathname === `/${parts[0]}/index.html` ||
-          (pathname.includes('index.html') && pathname.split('/').filter(p => p).length === 2)) {
-        return './';
-      }
-      // Otherwise, we're in a subdirectory (shouldn't happen now that HTML files are in root)
-      return '../';
+      // We're at repo root (e.g., /aeterna/ar-image.html -> parts = ['aeterna'] after removing filename)
+      // All HTML files are in root, so always return './'
+      return './';
     }
     
     // We have 2+ directory parts, so we're in a subdirectory
@@ -42,9 +36,17 @@
     const depth = parts.length - 1;
     return '../'.repeat(depth);
   };
-  const DEFAULT_DATA_URL = getBasePath() + 'data/attractions.yaml';
+  
+  // Get default data URL dynamically (not at module load time)
+  const getDefaultDataUrl = () => {
+    return getBasePath() + 'data/attractions.yaml';
+  };
 
   async function fetchYaml(url) {
+    // If no URL provided, get the default dynamically
+    if (!url) {
+      url = getDefaultDataUrl();
+    }
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch ' + url);
     const text = await res.text();
@@ -146,7 +148,7 @@
   }
 
   async function loadAttractions(url) {
-    const base = await fetchYaml(url || DEFAULT_DATA_URL);
+    const base = await fetchYaml(url || getDefaultDataUrl());
     const withOverrides = overlayWithLocalEdits(base);
     // Normalize all asset paths to be relative to current page
     return Array.isArray(withOverrides) 
