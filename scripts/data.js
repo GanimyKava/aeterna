@@ -32,13 +32,13 @@
           (pathname.includes('index.html') && pathname.split('/').filter(p => p).length === 2)) {
         return './';
       }
-      // Otherwise, we're in a subdirectory like /view/file.html
+      // Otherwise, we're in a subdirectory (shouldn't happen now that HTML files are in root)
       return '../';
     }
     
     // We have 2+ directory parts, so we're in a subdirectory
     // Go up (parts.length - 1) levels to reach repo root
-    // Example: /aeterna/view/file.html -> parts = ['aeterna', 'view'] -> go up 1 -> '../'
+    // Example: /aeterna/subdir/file.html -> parts = ['aeterna', 'subdir'] -> go up 1 -> '../'
     const depth = parts.length - 1;
     return '../'.repeat(depth);
   };
