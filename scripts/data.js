@@ -39,7 +39,20 @@
   
   // Get default data URL dynamically (not at module load time)
   const getDefaultDataUrl = () => {
-    return getBasePath() + 'data/attractions.yaml';
+    const basePath = getBasePath();
+    // Construct relative path
+    const relativePath = basePath === './' ? 'data/attractions.yaml' : basePath + 'data/attractions.yaml';
+    
+    // Use URL constructor to ensure path is resolved correctly relative to current document
+    try {
+      // Resolve relative to current document location
+      const url = new URL(relativePath, window.location.href);
+      return url.pathname; // Return just the pathname part
+    } catch (e) {
+      // Fallback to relative path if URL construction fails
+      console.warn('Failed to construct absolute URL, using relative path:', relativePath);
+      return relativePath;
+    }
   };
 
   async function fetchYaml(url) {
@@ -47,8 +60,15 @@
     if (!url) {
       url = getDefaultDataUrl();
     }
+    
+    // Log for debugging (can be removed in production)
+    console.log('Fetching YAML from:', url, 'from pathname:', window.location.pathname);
+    
     const res = await fetch(url, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch ' + url);
+    if (!res.ok) {
+      console.error('Failed to fetch YAML:', url, 'Status:', res.status, res.statusText);
+      throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
+    }
     const text = await res.text();
     // Parse YAML using js-yaml library (must be loaded before this script)
     // js-yaml exposes as jsyaml or jsYAML depending on version
