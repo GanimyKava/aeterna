@@ -1,0 +1,22 @@
+# Ensure binary AR marker files are treated as binary and served correctly
+*.patt binary
+*.fset binary
+*.fset3 binary
+*.iset binary
+
+# Ensure these files are not processed by Git LFS or other filters
+*.patt -filter -diff -merge
+*.fset -filter -diff -merge
+*.fset3 -filter -diff -merge
+*.iset -filter -diff -merge
+
+# Ensure videos are treated as binary
+*.mp4 binary
+*.webm binary
+
+# Ensure images are treated as binary
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.gif binary
+
