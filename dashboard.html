@@ -15,21 +15,133 @@
   </head>
   <body>
     <div class="container">
-      <div>
-        <h1>Echoes of Eternity AR</h1>
-        <p class="subtitle">Dashboard</p>
+      <div class="header-section">
+        <div>
+          <h1>Echoes of Eternity AR</h1>
+          <p class="subtitle">Dashboard</p>
+        </div>
         <a class="btn" href="index.html">Back</a>
       </div>
 
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">👥</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="total-users">0</div>
+            <div class="kpi-label">Total Users</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📱</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="total-sessions">0</div>
+            <div class="kpi-label">Sessions</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">⏱️</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="avg-session">0m</div>
+            <div class="kpi-label">Avg Session</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">🎯</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="detection-rate">0%</div>
+            <div class="kpi-label">Detection Rate</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="revenue-potential">$0</div>
+            <div class="kpi-label">Revenue Potential</div>
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon">📍</div>
+          <div class="kpi-content">
+            <div class="kpi-value" id="active-locations">0</div>
+            <div class="kpi-label">Active Locations</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
       <div class="grid">
         <div class="card">
-          <h3>Attractions</h3>
+          <h3>Attractions Performance</h3>
           <div id="list" class="list"></div>
         </div>
         <div class="card">
-          <h3>Usage Metrics</h3>
-          <div class="small" style="margin-bottom: 8px;">Client-side counts (localStorage). Integrate GA/PostHog for production.</div>
-          <canvas id="chart" height="200"></canvas>
+          <h3>Top Attractions</h3>
+          <div class="small" style="margin-bottom: 8px;">Views by attraction</div>
+          <canvas id="chart-views" height="200"></canvas>
+        </div>
+      </div>
+
+      <!-- User Experience Metrics -->
+      <div class="section-title">User Experience Metrics</div>
+      <div class="grid">
+        <div class="card">
+          <h3>AR Mode Usage</h3>
+          <canvas id="chart-modes" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Video Completion Rate</h3>
+          <canvas id="chart-completion" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Session Duration Distribution</h3>
+          <canvas id="chart-duration" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Peak Usage Times</h3>
+          <canvas id="chart-peak-hours" height="250"></canvas>
+        </div>
+      </div>
+
+      <!-- Commercial Metrics -->
+      <div class="section-title">Commercial Metrics</div>
+      <div class="grid">
+        <div class="card">
+          <h3>Revenue by Attraction</h3>
+          <canvas id="chart-revenue" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Engagement Score</h3>
+          <canvas id="chart-engagement" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Weekly Trends</h3>
+          <canvas id="chart-weekly" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Conversion Funnel</h3>
+          <div id="funnel" class="funnel-container"></div>
+        </div>
+      </div>
+
+      <!-- Tourism Metrics -->
+      <div class="section-title">Tourism Metrics</div>
+      <div class="grid">
+        <div class="card">
+          <h3>Popular Cities</h3>
+          <canvas id="chart-cities" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Location-Based Engagement</h3>
+          <canvas id="chart-location" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Tourist Flow (Last 7 Days)</h3>
+          <canvas id="chart-flow" height="250"></canvas>
+        </div>
+        <div class="card">
+          <h3>Seasonal Trends</h3>
+          <canvas id="chart-seasonal" height="250"></canvas>
         </div>
       </div>
     </div>
