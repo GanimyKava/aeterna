@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Echoes of Eternity AR - Dashboard </title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+    <link rel="stylesheet" href="../styles/common.css" />
+    <link rel="stylesheet" href="../styles/dashboard.css" />
+    <script src="../scripts/js-yaml.min.js"></script>
+    <script defer src="../scripts/data.js"></script>
+    <script defer src="../scripts/metrics.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="../scripts/dashboard.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div>
+        <h1>Echoes of Eternity AR</h1>
+        <p class="subtitle">Dashboard</p>
+        <a class="btn" href="../index.html">Back</a>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h3>Attractions</h3>
+          <div id="list" class="list"></div>
+        </div>
+        <div class="card">
+          <h3>Usage Metrics</h3>
+          <div class="small" style="margin-bottom: 8px;">Client-side counts (localStorage). Integrate GA/PostHog for production.</div>
+          <canvas id="chart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>
+
+

@@ -1,0 +1,135 @@
+/* Dashboard page styles - Desktop/Laptop optimized */
+body {
+  background: #f5f7fa;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px;
+}
+
+.container > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 32px;
+  color: #1a5490;
+  font-weight: 600;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 2fr 1fr;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.list {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.list .item {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e1e8ed;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  transition: background 0.2s ease;
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.list .item:hover {
+  background: #f8f9fa;
+}
+
+.list .item:last-child {
+  border-bottom: none;
+}
+
+.small {
+  color: #7f8c8d;
+  font-size: 12px;
+}
+
+a.btn {
+  display: inline-block;
+  background: #34495e;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+a.btn:hover {
+  background: #2c3e50;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+canvas {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e1e8ed;
+}
+
+/* Tablet adjustments */
+@media (max-width: 1024px) {
+  .container {
+    padding: 24px;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .container > div:first-child {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+  
+  .list .item {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}

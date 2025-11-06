@@ -1,33 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Echoes of Eternity AR - Historical Tour Guide</title>
-    <script src="scripts/aframe.min.js"></script>
-    <script src="scripts/aframe-ar-nft.js"></script>
-    <script src="scripts/aframe-ar.js"></script>
-    <script src="scripts/app.js"></script>
-    <link href="styles/app.css" rel="stylesheet">    
-</head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" />
+    <link rel="stylesheet" href="/styles/common.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
+    <script src="/scripts/js-yaml.min.js"></script>
+    <script defer src="/scripts/app.js"></script>
+    <script defer src="/scripts/data.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <h1>Echoes of Eternity AR</h1>
+        <p class="subtitle">Discover History Through Augmented Reality</p>
+      </header>
 
-<body style='margin : 0px; overflow: hidden;'>
-    <div class="arjs-loader">
-        <div>Loading, please wait...</div>
+      <main class="main-content">
+        <section class="ar-modes">
+          <h2>Choose Your AR Experience</h2>
+          <div class="modes-grid">
+            <a class="mode-card" href="/view/ar-image.html">
+              <div class="mode-icon">📷</div>
+              <h3>Image-based AR</h3>
+              <p class="mode-desc">Point your camera at trained images to reveal AR content</p>
+            </a>
+            <a class="mode-card" href="/view/ar-marker.html">
+              <div class="mode-icon">🎯</div>
+              <h3>Marker-based AR</h3>
+              <p class="mode-desc">Use printed markers or barcodes to trigger AR experiences</p>
+            </a>
+            <a class="mode-card" href="/view/ar-location.html">
+              <div class="mode-icon">📍</div>
+              <h3>Location-based AR</h3>
+              <p class="mode-desc">Discover AR content when you're near tourist attractions</p>
+            </a>
+          </div>
+        </section>
+
+        <section class="quick-links">
+          <a class="link-btn" href="/view/dashboard.html">
+            <span class="link-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+          <a class="link-btn" href="/view/admin.html">
+            <span class="link-icon">⚙️</span>
+            <span>Admin</span>
+          </a>
+        </section>
+      </main>
     </div>
-    <h1 class="app-title">Echoes of Eternity AR</h1>
-    <p class="subtitle">Discover History Through Augmented Reality</p>
-    <a-scene vr-mode-ui="enabled: false;" renderer='antialias: true; alpha: true; precision: medium;' embedded
-        arjs='trackingMethod: best; sourceType: webcam; debugUIEnabled: false;'
-        mindar-image="imageTargetSrc: targets.mind; filterMinCF: 0.001; filterBeta: 10;">
+  </body>
+  </html>
 
-        <a-assets id="dynamic-assets"></a-assets>
 
-        <a-entity id="markers-container"></a-entity>
-        <a-entity id="gps-places-container"></a-entity>
-        <a-entity camera gps-camera rotation-reader gpsMinDistance="10" gpsTimeInterval="1500" positionMinAccuracy="30"></a-entity>
-    </a-scene>
-</body>
-
-</html>

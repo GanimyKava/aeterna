@@ -1,0 +1,374 @@
+/* AR pages shared styles - Mobile-first design */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+html {
+  /* Prevent mobile browser address bar from affecting viewport */
+  height: -webkit-fill-available;
+}
+
+body {
+  background: transparent !important;
+  background-color: transparent !important;
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  /* Fallback for mobile browsers */
+  height: -webkit-fill-available;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow: hidden;
+}
+
+a-scene {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 1;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+/* Ensure A-Frame canvas is fullscreen - override embedded behavior */
+a-scene[embedded] {
+  width: 100vw !important;
+  height: 100vh !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+
+a-scene canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  width: 100% !important;
+  height: 100vh !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  object-fit: fill !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  z-index: 1 !important;
+  transform: none !important;
+  transform-origin: center center !important;
+}
+
+/* AR.js video element (camera feed) - ensure full width */
+a-scene video,
+a-scene > video,
+.arjs-video {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  width: 100% !important;
+  height: 100vh !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: 100vw !important;
+  min-width: 100vw !important;
+  object-fit: cover !important;
+  z-index: 0 !important;
+  background: transparent !important;
+  transform: none !important;
+  transform-origin: center center !important;
+}
+
+/* Ensure A-Frame container is fullscreen */
+a-scene > .a-canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+.ui {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0; /* Position at the very bottom, below video */
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  z-index: 1002; /* Above video */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
+  pointer-events: none; /* Allow clicks to pass through to video */
+  padding-bottom: 20px; /* Extra padding at bottom */
+}
+
+.ui .btn {
+  pointer-events: auto; /* Buttons are clickable */
+  min-width: 120px;
+}
+
+.btn {
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  min-width: 100px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.btn:hover,
+.btn:active {
+  background: #2980b9;
+  transform: scale(0.98);
+}
+
+.hint {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  z-index: 1000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  max-width: calc(100% - 32px);
+  line-height: 1.5;
+}
+
+/* Bottom video overlay - 90% width, centered, with 3D border */
+#video,
+.bottom-video {
+  position: fixed;
+  bottom: 80px; /* Position above buttons (adjust based on button height) */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  width: 90%; /* 90% of screen width */
+  height: 25vh; /* 1/4 of viewport height */
+  object-fit: cover;
+  z-index: 999;
+  background: #000;
+  display: none; /* Hidden by default, shown when video is loaded */
+  border-radius: 12px; /* More rounded for 3D effect */
+  /* 3D Beveled Border Effect */
+  border: 8px solid;
+  border-top-color: rgba(255, 255, 255, 0.9); /* Light top */
+  border-right-color: rgba(200, 200, 200, 0.7); /* Medium right */
+  border-bottom-color: rgba(50, 50, 50, 0.6); /* Dark bottom */
+  border-left-color: rgba(150, 150, 150, 0.7); /* Medium left */
+  box-shadow: 
+    inset 0 2px 6px rgba(255, 255, 255, 0.4), /* Inner top highlight */
+    inset 0 -2px 6px rgba(0, 0, 0, 0.6), /* Inner bottom shadow */
+    inset 2px 0 6px rgba(255, 255, 255, 0.2), /* Inner left highlight */
+    inset -2px 0 6px rgba(0, 0, 0, 0.4), /* Inner right shadow */
+    0 0 0 2px rgba(255, 255, 255, 0.15), /* Outer glow */
+    0 4px 10px rgba(0, 0, 0, 0.5), /* Main shadow */
+    0 8px 20px rgba(0, 0, 0, 0.4), /* Deeper shadow */
+    0 12px 30px rgba(0, 0, 0, 0.3); /* Ambient shadow */
+}
+
+#video.visible {
+  display: block;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  html, body {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  body {
+    min-height: 100vh !important;
+    min-height: -webkit-fill-available !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  a-scene {
+    width: 100vw !important;
+    width: 100% !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  a-scene canvas {
+    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    transform-origin: center center !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  /* AR.js video element (camera feed) - ensure full width on mobile */
+  a-scene video,
+  a-scene > video,
+  .arjs-video {
+    width: 100vw !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    min-width: 100vw !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    object-fit: cover !important;
+    transform: none !important;
+    transform-origin: center center !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  /* Ensure A-Frame container is also positioned correctly on mobile */
+  a-scene > .a-canvas {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: -webkit-fill-available !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    background: transparent !important;
+    background-color: transparent !important;
+  }
+  
+  .ui {
+    padding: 12px;
+    gap: 10px;
+    bottom: 0; /* Position at bottom */
+    padding-bottom: 16px;
+  }
+  
+  #video,
+  .bottom-video {
+    bottom: 70px; /* Position above buttons on mobile */
+    width: 90%; /* 90% width on mobile too */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    border: 6px solid #fff; /* Thick white border */
+  }
+  
+  .btn {
+    padding: 12px 20px;
+    font-size: 14px;
+    min-width: 90px;
+    flex: 1;
+  }
+  
+  .hint {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+    font-size: 12px;
+    padding: 10px 14px;
+    max-width: calc(100% - 24px);
+  }
+  
+  #video,
+  .bottom-video {
+    height: 25vh; /* Maintain 1/4 screen height on mobile */
+  }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hint {
+    top: 8px;
+    padding: 8px 12px;
+    font-size: 11px;
+  }
+  
+  .ui {
+    padding: 10px;
+    bottom: 0; /* Position at bottom */
+    padding-bottom: 12px;
+  }
+  
+  #video,
+  .bottom-video {
+    height: 25vh; /* Maintain 1/4 screen height in landscape */
+    bottom: 60px; /* Position above buttons in landscape */
+    width: 90%; /* 90% width in landscape */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    border: 6px solid #fff; /* Thick white border */
+  }
+}
