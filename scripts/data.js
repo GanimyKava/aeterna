@@ -1,5 +1,48 @@
 (function () {
-  const DEFAULT_DATA_URL = '/data/attractions.yaml';
+  // Detect base path for GitHub Pages compatibility
+  // Returns the relative path from current page to repo root (where index.html is)
+  const getBasePath = () => {
+    const pathname = window.location.pathname;
+    
+    // Handle root path
+    if (pathname === '/' || pathname === '') {
+      return './';
+    }
+    
+    // Count directory levels: split by '/' and count non-empty parts (excluding filename)
+    const parts = pathname.split('/').filter(p => p);
+    
+    // Remove the HTML filename if present (last part ending in .html)
+    if (parts.length > 0 && parts[parts.length - 1].endsWith('.html')) {
+      parts.pop();
+    }
+    
+    // If we're at root (no directory parts), return './'
+    if (parts.length === 0) {
+      return './';
+    }
+    
+    // Special case: if pathname is exactly '/repo-name' or '/repo-name/index.html',
+    // we're at the repo root
+    if (parts.length === 1) {
+      // Check if this looks like the repo root page
+      if (pathname === `/${parts[0]}` || 
+          pathname === `/${parts[0]}/` ||
+          pathname === `/${parts[0]}/index.html` ||
+          (pathname.includes('index.html') && pathname.split('/').filter(p => p).length === 2)) {
+        return './';
+      }
+      // Otherwise, we're in a subdirectory like /view/file.html
+      return '../';
+    }
+    
+    // We have 2+ directory parts, so we're in a subdirectory
+    // Go up (parts.length - 1) levels to reach repo root
+    // Example: /aeterna/view/file.html -> parts = ['aeterna', 'view'] -> go up 1 -> '../'
+    const depth = parts.length - 1;
+    return '../'.repeat(depth);
+  };
+  const DEFAULT_DATA_URL = getBasePath() + 'data/attractions.yaml';
 
   async function fetchYaml(url) {
     const res = await fetch(url, { cache: 'no-store' });
@@ -15,12 +58,53 @@
     }
   }
 
+  // Convert asset paths to be relative to current page (for GitHub Pages compatibility)
+  function normalizeAssetPath(path) {
+    if (!path || typeof path !== 'string') return path;
+    // If path starts with /, it's absolute - remove it
+    if (path.startsWith('/')) {
+      path = path.substring(1);
+    }
+    // If path doesn't start with http:// or https://, make it relative to repo root
+    if (!path.startsWith('http://') && !path.startsWith('https://')) {
+      const basePath = getBasePath();
+      // Only prepend base path if it's not already relative (doesn't start with ../ or ./)
+      if (!path.startsWith('../') && !path.startsWith('./')) {
+        return basePath + path;
+      }
+    }
+    return path;
+  }
+
+  // Normalize all asset paths in an attraction object
+  function normalizeAttractionPaths(attraction) {
+    const normalized = { ...attraction };
+    if (normalized.videoUrl) {
+      normalized.videoUrl = normalizeAssetPath(normalized.videoUrl);
+    }
+    if (normalized.marker && normalized.marker.patternUrl) {
+      normalized.marker = { ...normalized.marker };
+      normalized.marker.patternUrl = normalizeAssetPath(normalized.marker.patternUrl);
+    }
+    if (normalized.imageNFT && normalized.imageNFT.nftBaseUrl) {
+      normalized.imageNFT = { ...normalized.imageNFT };
+      normalized.imageNFT.nftBaseUrl = normalizeAssetPath(normalized.imageNFT.nftBaseUrl);
+    }
+    if (normalized.thumbnail) {
+      normalized.thumbnail = normalizeAssetPath(normalized.thumbnail);
+    }
+    return normalized;
+  }
+
   function overlayWithLocalEdits(attractions) {
     try {
       const raw = localStorage.getItem('eternity.attractions.override');
       if (!raw) return attractions;
       const edits = JSON.parse(raw);
-      return Array.isArray(edits) && edits.length ? edits : attractions;
+      // Normalize paths in overrides as well
+      return Array.isArray(edits) && edits.length 
+        ? edits.map(normalizeAttractionPaths)
+        : attractions;
     } catch (_) {
       return attractions;
     }
@@ -52,7 +136,11 @@
 
   async function loadAttractions(url) {
     const base = await fetchYaml(url || DEFAULT_DATA_URL);
-    return overlayWithLocalEdits(base);
+    const withOverrides = overlayWithLocalEdits(base);
+    // Normalize all asset paths to be relative to current page
+    return Array.isArray(withOverrides) 
+      ? withOverrides.map(normalizeAttractionPaths)
+      : withOverrides;
   }
 
   function saveAttractionsOverride(attractions) {
