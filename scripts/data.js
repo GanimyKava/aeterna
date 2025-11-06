@@ -58,21 +58,32 @@
     }
   }
 
-  // Convert asset paths to be relative to current page (for GitHub Pages compatibility)
+  // Convert asset paths to be relative to the HTML document (for GitHub Pages compatibility)
+  // A-Frame resolves assets relative to the document, so we need paths relative to the document location
   function normalizeAssetPath(path) {
     if (!path || typeof path !== 'string') return path;
-    // If path starts with /, it's absolute - remove it
+    
+    // If it's already an absolute URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // If path starts with /, it's absolute from domain root - convert to relative
     if (path.startsWith('/')) {
+      // Remove leading slash and get base path to repo root
       path = path.substring(1);
-    }
-    // If path doesn't start with http:// or https://, make it relative to repo root
-    if (!path.startsWith('http://') && !path.startsWith('https://')) {
       const basePath = getBasePath();
-      // Only prepend base path if it's not already relative (doesn't start with ../ or ./)
-      if (!path.startsWith('../') && !path.startsWith('./')) {
-        return basePath + path;
-      }
+      return basePath + path;
     }
+    
+    // Path is already relative - ensure it's relative to document
+    // If it doesn't start with ../ or ./, prepend base path
+    if (!path.startsWith('../') && !path.startsWith('./')) {
+      const basePath = getBasePath();
+      return basePath + path;
+    }
+    
+    // Path already starts with ../ or ./, return as-is
     return path;
   }
 

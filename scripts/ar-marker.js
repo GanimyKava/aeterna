@@ -479,4 +479,50 @@ function setupForAttraction(a) {
   }
 })();
 
+// Stop all videos when back button is clicked
+(function() {
+  const backButton = document.querySelector('a.btn[href*="index.html"]');
+  if (backButton) {
+    backButton.addEventListener('click', function(e) {
+      // Stop UI video
+      if (uiVideo) {
+        uiVideo.pause();
+        uiVideo.currentTime = 0;
+        uiVideo.src = '';
+        uiVideo.style.display = 'none';
+        uiVideo.classList.remove('visible');
+      }
+      
+      // Stop all A-Frame video elements
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        const aFrameVideos = scene.querySelectorAll('video');
+        aFrameVideos.forEach(video => {
+          video.pause();
+          video.currentTime = 0;
+          if (video.hasAttribute('src')) {
+            video.setAttribute('src', '');
+          }
+        });
+        
+        // Also stop videos in a-assets
+        const assets = scene.querySelector('a-assets');
+        if (assets) {
+          const assetVideos = assets.querySelectorAll('video');
+          assetVideos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+            if (video.hasAttribute('src')) {
+              video.setAttribute('src', '');
+            }
+          });
+        }
+      }
+      
+      // Allow navigation to proceed
+      // Navigation will happen via href
+    });
+  }
+})();
+
 

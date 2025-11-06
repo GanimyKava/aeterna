@@ -90,4 +90,41 @@ window.addEventListener('gps-camera-update-position', (e) => {
   }
 })();
 
+// Stop all videos when back button is clicked
+(function() {
+  const backButton = document.querySelector('a.btn[href*="index.html"]');
+  if (backButton) {
+    backButton.addEventListener('click', function(e) {
+      // Stop UI video
+      if (uiVideo) {
+        uiVideo.pause();
+        uiVideo.currentTime = 0;
+        uiVideo.src = '';
+        uiVideo.style.display = 'none';
+      }
+      
+      // Stop all A-Frame video elements
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        const aFrameVideos = scene.querySelectorAll('video');
+        aFrameVideos.forEach(video => {
+          video.pause();
+          video.currentTime = 0;
+          if (video.hasAttribute('src')) {
+            video.setAttribute('src', '');
+          }
+        });
+      }
+      
+      // Clear loaded videos map
+      if (typeof loadedVideos !== 'undefined' && loadedVideos instanceof Map) {
+        loadedVideos.clear();
+      }
+      
+      // Allow navigation to proceed
+      // Navigation will happen via href
+    });
+  }
+})();
+
 

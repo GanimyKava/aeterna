@@ -8,6 +8,43 @@ const uiVideo = document.getElementById('video');
 // Store attraction data for each marker
 const attractionMap = new Map();
 
+// Reset video elements on page load to ensure clean state after reload
+function resetVideoElements() {
+  // Reset UI video
+  if (uiVideo) {
+    uiVideo.pause();
+    uiVideo.currentTime = 0;
+    uiVideo.src = '';
+    uiVideo.style.display = 'none';
+    uiVideo.classList.remove('visible');
+  }
+  
+  // Clear any existing video assets in a-assets
+  const scene = document.querySelector('a-scene');
+  if (scene) {
+    const assets = scene.querySelector('a-assets');
+    if (assets) {
+      // Remove all video elements except the default one
+      const videos = assets.querySelectorAll('video');
+      videos.forEach(video => {
+        if (video.id !== 'video-asset') {
+          video.pause();
+          video.currentTime = 0;
+          if (video.hasAttribute('src')) {
+            video.setAttribute('src', '');
+          }
+          video.remove();
+        }
+      });
+    }
+  }
+  
+  // Clear nftRoot to remove any existing markers
+  if (nftRoot) {
+    nftRoot.innerHTML = '';
+  }
+}
+
 function setupForAttraction(a) {
   const nft = a.imageNFT && a.imageNFT.nftBaseUrl;
   if (!nft || !a.videoUrl) {
@@ -147,34 +184,72 @@ function setupForAttraction(a) {
         playVideo();
       }, 800);
     } else if (loaded) {
-      // Video already loaded, just play it immediately and show it
-      console.log(`Replaying video for ${a.name}`);
+      // Video already loaded, restart and play it when marker is re-detected
+      console.log(`Re-visiting marker: ${a.name} - restarting video`);
+      
+      // Ensure video source is still set (might have been cleared on reload)
+      if (videoEl && !videoEl.getAttribute('src')) {
+        videoEl.setAttribute('src', a.videoUrl);
+      }
+      if (uiVideo && !uiVideo.src) {
+        uiVideo.src = a.videoUrl;
+      }
+      
+      // Function to restart and play video
+      const restartVideo = () => {
+        if (videoEl) {
+          videoEl.muted = false; // Ensure unmuted
+          videoEl.currentTime = 0; // Restart from beginning
+          // Ensure video is loaded
+          videoEl.load();
+          videoEl.play().catch(err => {
+            console.warn(`Failed to replay A-Frame video for ${a.name}:`, err);
+            if (err.name === 'NotAllowedError') {
+              videoEl.muted = true;
+              videoEl.play().then(() => {
+                setTimeout(() => { videoEl.muted = false; }, 100);
+              }).catch(() => {});
+            }
+          });
+        }
+        if (uiVideo) {
+          uiVideo.muted = false;
+          uiVideo.currentTime = 0; // Restart from beginning
+          // Show video when marker is detected again
+          uiVideo.style.display = 'block';
+          uiVideo.classList.add('visible');
+          // Reload video to ensure it plays
+          uiVideo.load();
+          uiVideo.play().catch(err => {
+            console.warn(`Failed to replay UI video for ${a.name}:`, err);
+            if (err.name === 'NotAllowedError') {
+              uiVideo.muted = true;
+              uiVideo.play().then(() => {
+                setTimeout(() => { uiVideo.muted = false; }, 100);
+              }).catch(() => {});
+            }
+          });
+        }
+      };
+      
+      // Restart video immediately
+      restartVideo();
+      
+      // Also try after a short delay to ensure it plays
+      setTimeout(() => {
+        restartVideo();
+      }, 100);
+      
+      // Try again when video can play
       if (videoEl) {
-        videoEl.muted = false; // Ensure unmuted
-        videoEl.currentTime = 0; // Restart from beginning
-        videoEl.play().catch(err => {
-          if (err.name === 'NotAllowedError') {
-            videoEl.muted = true;
-            videoEl.play().then(() => {
-              setTimeout(() => { videoEl.muted = false; }, 100);
-            }).catch(() => {});
-          }
-        });
+        videoEl.addEventListener('canplay', () => {
+          restartVideo();
+        }, { once: true });
       }
       if (uiVideo) {
-        uiVideo.muted = false;
-        uiVideo.currentTime = 0;
-        // Show video when marker is detected again
-        uiVideo.style.display = 'block';
-        uiVideo.classList.add('visible');
-        uiVideo.play().catch(err => {
-          if (err.name === 'NotAllowedError') {
-            uiVideo.muted = true;
-            uiVideo.play().then(() => {
-              setTimeout(() => { uiVideo.muted = false; }, 100);
-            }).catch(() => {});
-          }
-        });
+        uiVideo.addEventListener('canplay', () => {
+          restartVideo();
+        }, { once: true });
       }
     }
     
@@ -228,6 +303,9 @@ function setupForAttraction(a) {
 
 // Initialize: Load all attractions from YAML and setup NFT markers
 (async function init() {
+  // Reset video elements first to ensure clean state
+  resetVideoElements();
+  
   // Wait for A-Frame scene to be ready
   const scene = document.querySelector('a-scene');
   if (!scene) {
@@ -463,6 +541,52 @@ function setupForAttraction(a) {
     startInitialization();
   } else {
     scene.addEventListener('loaded', startInitialization, { once: true });
+  }
+})();
+
+// Stop all videos when back button is clicked
+(function() {
+  const backButton = document.querySelector('a.btn[href*="index.html"]');
+  if (backButton) {
+    backButton.addEventListener('click', function(e) {
+      // Stop UI video
+      if (uiVideo) {
+        uiVideo.pause();
+        uiVideo.currentTime = 0;
+        uiVideo.src = '';
+        uiVideo.style.display = 'none';
+        uiVideo.classList.remove('visible');
+      }
+      
+      // Stop all A-Frame video elements
+      const scene = document.querySelector('a-scene');
+      if (scene) {
+        const aFrameVideos = scene.querySelectorAll('video');
+        aFrameVideos.forEach(video => {
+          video.pause();
+          video.currentTime = 0;
+          if (video.hasAttribute('src')) {
+            video.setAttribute('src', '');
+          }
+        });
+        
+        // Also stop videos in a-assets
+        const assets = scene.querySelector('a-assets');
+        if (assets) {
+          const assetVideos = assets.querySelectorAll('video');
+          assetVideos.forEach(video => {
+            video.pause();
+            video.currentTime = 0;
+            if (video.hasAttribute('src')) {
+              video.setAttribute('src', '');
+            }
+          });
+        }
+      }
+      
+      // Allow navigation to proceed
+      // Navigation will happen via href
+    });
   }
 })();
 
