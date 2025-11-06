@@ -27,6 +27,13 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Verify video files
+        run: |
+          echo "Checking video files..."
+          ls -lh assets/videos/ || echo "Video directory not found"
+          find assets/videos -name "*.mp4" -exec ls -lh {} \;
+          echo "Video files verified"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

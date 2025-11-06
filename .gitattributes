@@ -10,13 +10,16 @@
 *.fset3 -filter -diff -merge
 *.iset -filter -diff -merge
 
-# Ensure videos are treated as binary
+# Ensure videos are treated as binary (important for GitHub Pages)
 *.mp4 binary
 *.webm binary
+*.mov binary
+*.avi binary
 
 # Ensure images are treated as binary
 *.jpg binary
 *.jpeg binary
 *.png binary
 *.gif binary
+*.svg binary
 
