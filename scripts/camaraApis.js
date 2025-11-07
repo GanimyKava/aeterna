@@ -11,7 +11,7 @@
       qosProfiles: "https://operator.example.com/qos-profiles/v0/profiles",
       qualityOnDemand: "https://operator.example.com/quality-on-demand/v0/sessions"
     },
-    sampleResponsesUrl: "/data/camaraSampleResponses.json",
+    sampleResponsesUrl: "data/camaraSampleResponses.json",
     mockDelayMs: 50
   };
 
