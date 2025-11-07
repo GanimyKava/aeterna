@@ -1,68 +1,11 @@
 (function () {
-  // Detect base path for GitHub Pages compatibility
-  // Returns the relative path from current page to repo root (where index.html is)
-  const getBasePath = () => {
-    const pathname = window.location.pathname;
-    
-    // Handle root path
-    if (pathname === '/' || pathname === '') {
-      return './';
-    }
-    
-    // Count directory levels: split by '/' and count non-empty parts (excluding filename)
-    const parts = pathname.split('/').filter(p => p);
-    
-    // Remove the HTML filename if present (last part ending in .html)
-    if (parts.length > 0 && parts[parts.length - 1].endsWith('.html')) {
-      parts.pop();
-    }
-    
-    // If we're at root (no directory parts), return './'
-    if (parts.length === 0) {
-      return './';
-    }
-    
-    // Special case: if we have only 1 part (repo name), we're at the repo root
-    // Since all HTML files are now in root, any HTML file should use './'
-    if (parts.length === 1) {
-      // We're at repo root (e.g., /aeterna/ar-image.html -> parts = ['aeterna'] after removing filename)
-      // All HTML files are in root, so always return './'
-      return './';
-    }
-    
-    // We have 2+ directory parts, so we're in a subdirectory
-    // Go up (parts.length - 1) levels to reach repo root
-    // Example: /aeterna/subdir/file.html -> parts = ['aeterna', 'subdir'] -> go up 1 -> '../'
-    const depth = parts.length - 1;
-    return '../'.repeat(depth);
-  };
-  
-  // Get default data URL dynamically (not at module load time)
-  const getDefaultDataUrl = () => {
-    const basePath = getBasePath();
-    // Construct relative path
-    const relativePath = basePath === './' ? 'data/attractions.yaml' : basePath + 'data/attractions.yaml';
-    
-    // Use URL constructor to ensure path is resolved correctly relative to current document
-    try {
-      // Resolve relative to current document location
-      const url = new URL(relativePath, window.location.href);
-      return url.pathname; // Return just the pathname part
-    } catch (e) {
-      // Fallback to relative path if URL construction fails
-      console.warn('Failed to construct absolute URL, using relative path:', relativePath);
-      return relativePath;
-    }
-  };
+  const DEFAULT_DATA_URL = 'data/attractions.yaml';
 
   async function fetchYaml(url) {
-    // If no URL provided, get the default dynamically
+    // Use default URL if none provided
     if (!url) {
-      url = getDefaultDataUrl();
+      url = DEFAULT_DATA_URL;
     }
-    
-    // Log for debugging (can be removed in production)
-    console.log('Fetching YAML from:', url, 'from pathname:', window.location.pathname);
     
     const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) {
@@ -80,64 +23,12 @@
     }
   }
 
-  // Convert asset paths to be relative to the HTML document (for GitHub Pages compatibility)
-  // A-Frame resolves assets relative to the document, so we need paths relative to the document location
-  function normalizeAssetPath(path) {
-    if (!path || typeof path !== 'string') return path;
-    
-    // If it's already an absolute URL, return as-is
-    if (path.startsWith('http://') || path.startsWith('https://')) {
-      return path;
-    }
-    
-    // If path starts with /, it's absolute from domain root - convert to relative
-    if (path.startsWith('/')) {
-      // Remove leading slash and get base path to repo root
-      path = path.substring(1);
-      const basePath = getBasePath();
-      return basePath + path;
-    }
-    
-    // Path is already relative - ensure it's relative to document
-    // If it doesn't start with ../ or ./, prepend base path
-    if (!path.startsWith('../') && !path.startsWith('./')) {
-      const basePath = getBasePath();
-      return basePath + path;
-    }
-    
-    // Path already starts with ../ or ./, return as-is
-    return path;
-  }
-
-  // Normalize all asset paths in an attraction object
-  function normalizeAttractionPaths(attraction) {
-    const normalized = { ...attraction };
-    if (normalized.videoUrl) {
-      normalized.videoUrl = normalizeAssetPath(normalized.videoUrl);
-    }
-    if (normalized.marker && normalized.marker.patternUrl) {
-      normalized.marker = { ...normalized.marker };
-      normalized.marker.patternUrl = normalizeAssetPath(normalized.marker.patternUrl);
-    }
-    if (normalized.imageNFT && normalized.imageNFT.nftBaseUrl) {
-      normalized.imageNFT = { ...normalized.imageNFT };
-      normalized.imageNFT.nftBaseUrl = normalizeAssetPath(normalized.imageNFT.nftBaseUrl);
-    }
-    if (normalized.thumbnail) {
-      normalized.thumbnail = normalizeAssetPath(normalized.thumbnail);
-    }
-    return normalized;
-  }
-
   function overlayWithLocalEdits(attractions) {
     try {
       const raw = localStorage.getItem('eternity.attractions.override');
       if (!raw) return attractions;
       const edits = JSON.parse(raw);
-      // Normalize paths in overrides as well
-      return Array.isArray(edits) && edits.length 
-        ? edits.map(normalizeAttractionPaths)
-        : attractions;
+      return Array.isArray(edits) && edits.length ? edits : attractions;
     } catch (_) {
       return attractions;
     }
@@ -168,12 +59,9 @@
   }
 
   async function loadAttractions(url) {
-    const base = await fetchYaml(url || getDefaultDataUrl());
+    const base = await fetchYaml(url || DEFAULT_DATA_URL);
     const withOverrides = overlayWithLocalEdits(base);
-    // Normalize all asset paths to be relative to current page
-    return Array.isArray(withOverrides) 
-      ? withOverrides.map(normalizeAttractionPaths)
-      : withOverrides;
+    return withOverrides;
   }
 
   function saveAttractionsOverride(attractions) {

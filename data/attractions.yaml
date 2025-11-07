@@ -20,7 +20,7 @@
   type: location
   marker:
     preset: "Pattern"
-    patternUrl: "assets/markers/pattern-MCG_Australia.patt"
+    patternUrl: "./assets/markers/pattern-MCG_Australia.patt"
   imageNFT:
     nftBaseUrl: "./assets/nfts/MCG_Australia"
   location:
