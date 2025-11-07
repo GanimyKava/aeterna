@@ -1,6 +1,51 @@
 (function () {
   const DEFAULT_DATA_URL = 'data/attractions.yaml';
 
+  // Resolve asset paths to include repository path for GitHub Pages
+  function resolveAssetPath(path) {
+    if (!path || typeof path !== 'string') return path;
+    
+    // If it's already an absolute URL, return as-is
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      return path;
+    }
+    
+    // Resolve relative path relative to current document
+    // This ensures GitHub Pages paths include the repo name
+    try {
+      const url = new URL(path, window.location.href);
+      return url.pathname; // Return absolute pathname (includes repo name on GitHub Pages)
+    } catch (e) {
+      // Fallback: return path as-is if URL construction fails
+      return path;
+    }
+  }
+
+  // Normalize asset paths in an attraction object for GitHub Pages
+  function normalizeAttractionPaths(attraction) {
+    const normalized = { ...attraction };
+    
+    if (normalized.videoUrl) {
+      normalized.videoUrl = resolveAssetPath(normalized.videoUrl);
+    }
+    
+    if (normalized.marker && normalized.marker.patternUrl) {
+      normalized.marker = { ...normalized.marker };
+      normalized.marker.patternUrl = resolveAssetPath(normalized.marker.patternUrl);
+    }
+    
+    if (normalized.imageNFT && normalized.imageNFT.nftBaseUrl) {
+      normalized.imageNFT = { ...normalized.imageNFT };
+      normalized.imageNFT.nftBaseUrl = resolveAssetPath(normalized.imageNFT.nftBaseUrl);
+    }
+    
+    if (normalized.thumbnail) {
+      normalized.thumbnail = resolveAssetPath(normalized.thumbnail);
+    }
+    
+    return normalized;
+  }
+
   async function fetchYaml(url) {
     // Use default URL if none provided
     if (!url) {
@@ -28,7 +73,10 @@
       const raw = localStorage.getItem('eternity.attractions.override');
       if (!raw) return attractions;
       const edits = JSON.parse(raw);
-      return Array.isArray(edits) && edits.length ? edits : attractions;
+      // Normalize paths in overrides as well
+      return Array.isArray(edits) && edits.length 
+        ? edits.map(normalizeAttractionPaths)
+        : attractions;
     } catch (_) {
       return attractions;
     }
@@ -61,7 +109,10 @@
   async function loadAttractions(url) {
     const base = await fetchYaml(url || DEFAULT_DATA_URL);
     const withOverrides = overlayWithLocalEdits(base);
-    return withOverrides;
+    // Normalize all asset paths to include repository path for GitHub Pages
+    return Array.isArray(withOverrides) 
+      ? withOverrides.map(normalizeAttractionPaths)
+      : normalizeAttractionPaths(withOverrides);
   }
 
   function saveAttractionsOverride(attractions) {
