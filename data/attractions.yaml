@@ -44,7 +44,7 @@
     latitude: -33.8568
     longitude: 151.2153
     radiusMeters: 150
-  videoUrl: /assets/videos/TheSydneyOperaHouse_BBC_Australia.mp4
+  videoUrl: ./assets/videos/TheSydneyOperaHouse_BBC_Australia.mp4
   thumbnail: ""
   city: Sydney
   description: "One of the world's most famous performing arts venues and an architectural masterpiece. Designed by Jørn Utzon, it's a UNESCO World Heritage Site."
