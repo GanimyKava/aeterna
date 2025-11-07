@@ -17,9 +17,11 @@
   </head>
   <body>
     <div class="hint">Point camera at a marker</div>
-    <div class="ui">
-      <a class="btn" href="index.html">Back</a>
-    </div>
+    <a class="back-btn" href="index.html" title="Back to home">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+    </a>
 
     <video id="video" autoplay muted loop playsinline style="display:none"></video>
 
@@ -27,7 +29,7 @@
       vr-mode-ui="enabled: false" 
       embedded 
       renderer="logarithmicDepthBuffer: true; precision: mediump"
-      arjs="sourceType: webcam; debugUIEnabled: false;">
+      arjs="sourceType: webcam; debugUIEnabled: true;">
 
       <a-assets>
         <video id="video-asset" src="" preload="none" crossorigin="anonymous"></video>

@@ -113,24 +113,42 @@ a-scene > .a-canvas {
   background: transparent !important;
 }
 
-.ui {
+/* Back button - bottom right */
+.back-btn {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0; /* Position at the very bottom, below video */
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: rgba(52, 152, 219, 0.9);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 16px;
-  z-index: 1002; /* Above video */
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.7) 50%, transparent 100%);
-  pointer-events: none; /* Allow clicks to pass through to video */
-  padding-bottom: 20px; /* Extra padding at bottom */
+  cursor: pointer;
+  z-index: 1002;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  backdrop-filter: blur(10px);
 }
 
-.ui .btn {
-  pointer-events: auto; /* Buttons are clickable */
-  min-width: 120px;
+.back-btn:hover {
+  background: rgba(41, 128, 185, 0.95);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.back-btn:active {
+  transform: scale(0.95);
+}
+
+.back-btn svg {
+  width: 24px;
+  height: 24px;
+  stroke: #fff;
 }
 
 .btn {
@@ -209,8 +227,8 @@ a-scene > .a-canvas {
   display: block;
 }
 
-/* Mobile optimizations */
-@media (max-width: 768px) {
+/* Mobile optimizations - Portrait orientation */
+@media (max-width: 768px) and (orientation: portrait) {
   html, body {
     width: 100vw !important;
     height: 100vh !important;
@@ -310,11 +328,16 @@ a-scene > .a-canvas {
     background-color: transparent !important;
   }
   
-  .ui {
-    padding: 12px;
-    gap: 10px;
-    bottom: 0; /* Position at bottom */
-    padding-bottom: 16px;
+  .back-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+  }
+  
+  .back-btn svg {
+    width: 24px;
+    height: 24px;
   }
   
   #video,
@@ -324,13 +347,6 @@ a-scene > .a-canvas {
     left: 50%;
     transform: translateX(-50%); /* Center horizontally */
     border: 6px solid #fff; /* Thick white border */
-  }
-  
-  .btn {
-    padding: 12px 20px;
-    font-size: 14px;
-    min-width: 90px;
-    flex: 1;
   }
   
   .hint {
@@ -356,10 +372,17 @@ a-scene > .a-canvas {
     font-size: 11px;
   }
   
-  .ui {
-    padding: 10px;
-    bottom: 0; /* Position at bottom */
-    padding-bottom: 12px;
+  /* Landscape orientation - keep button visible but slightly smaller */
+  .back-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 52px;
+    height: 52px;
+  }
+  
+  .back-btn svg {
+    width: 22px;
+    height: 22px;
   }
   
   #video,

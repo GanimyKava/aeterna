@@ -92,7 +92,7 @@ window.addEventListener('gps-camera-update-position', (e) => {
 
 // Stop all videos when back button is clicked
 (function() {
-  const backButton = document.querySelector('a.btn[href*="index.html"]');
+  const backButton = document.querySelector('a.back-btn[href*="index.html"]');
   if (backButton) {
     backButton.addEventListener('click', function(e) {
       // Stop UI video
