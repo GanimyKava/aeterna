@@ -50,3 +50,17 @@ a {
 a:hover {
   color: #2980b9;
 }
+
+/* Home button icon styling */
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+}
+
+.home-btn svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}

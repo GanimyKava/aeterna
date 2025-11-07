@@ -17,9 +17,10 @@
   </head>
   <body>
     <div class="hint">A video appears when you are within range of a place</div>
-    <a class="back-btn" href="index.html" title="Back to home">
+    <a class="back-btn" href="index.html" title="Home" aria-label="Home">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
       </svg>
     </a>
 
@@ -29,7 +30,7 @@
       vr-mode-ui="enabled: false"
       embedded
       renderer="logarithmicDepthBuffer: true; precision: mediump"
-      arjs="sourceType: webcam; debugUIEnabled: true;">
+      arjs="sourceType: webcam; debugUIEnabled: false;">
 
       <a-entity id="gpsRoot"></a-entity>
       <a-camera gps-camera rotation-reader></a-camera>

@@ -26,67 +26,81 @@ function generateSyntheticData(attractions, views, visits) {
   const totalViews = Object.values(views).reduce((sum, v) => sum + v, 0) || 0;
   const totalVisits = Object.values(visits).reduce((sum, v) => sum + v, 0) || 0;
 
-  // Generate realistic synthetic data
+  // Generate realistic, positive synthetic data showing tourism growth
+  const baseUsers = Math.max(8500, totalVisits * 3.5 + Math.floor(Math.random() * 500));
+  const baseSessions = Math.max(24500, totalVisits * 4.2 + Math.floor(Math.random() * 800));
+  
   return {
-    // User Experience Metrics
-    totalUsers: Math.max(1247, totalVisits * 1.2 + Math.floor(Math.random() * 200)),
-    totalSessions: Math.max(3421, totalVisits * 2.5 + Math.floor(Math.random() * 500)),
-    avgSessionDuration: 4.2 + Math.random() * 1.5, // minutes
-    detectionRate: 78.5 + Math.random() * 10, // percentage
-    videoCompletionRate: 65.3 + Math.random() * 15, // percentage
+    // User Experience Metrics - Positive growth indicators
+    totalUsers: baseUsers,
+    totalSessions: baseSessions,
+    avgSessionDuration: 6.8 + Math.random() * 1.2, // minutes - increased engagement
+    detectionRate: 87.3 + Math.random() * 5, // percentage - high success rate
+    videoCompletionRate: 78.5 + Math.random() * 8, // percentage - strong engagement
     
-    // AR Mode Usage
+    // AR Mode Usage - Growing adoption
     modeUsage: {
-      'Image-based AR': Math.floor(totalVisits * 0.42) || 1247,
-      'Marker-based AR': Math.floor(totalVisits * 0.35) || 1034,
-      'Location-based AR': Math.floor(totalVisits * 0.23) || 680
+      'Image-based AR': Math.floor(baseSessions * 0.45) || 11025,
+      'Marker-based AR': Math.floor(baseSessions * 0.32) || 7840,
+      'Location-based AR': Math.floor(baseSessions * 0.23) || 5635
     },
     
-    // Session Duration Distribution (minutes)
+    // Session Duration Distribution (minutes) - Showing longer engagement
     sessionDuration: {
-      '0-2 min': 1240,
-      '2-5 min': 1850,
-      '5-10 min': 890,
-      '10-15 min': 340,
-      '15+ min': 101
+      '0-2 min': 2450,
+      '2-5 min': 6125,
+      '5-10 min': 9800,
+      '10-15 min': 4900,
+      '15+ min': 1225
     },
     
-    // Peak Usage Hours (24-hour format)
+    // Peak Usage Hours (24-hour format) - Tourism peak times
     peakHours: Array.from({length: 24}, (_, i) => {
-      // Peak at 10am, 2pm, 6pm
-      let base = 50;
-      if (i === 10 || i === 14 || i === 18) base = 180;
-      else if (i >= 8 && i <= 20) base = 80 + Math.sin((i - 8) * Math.PI / 12) * 60;
-      else base = 20;
-      return Math.floor(base + Math.random() * 30);
+      // Peak at 10am, 2pm, 6pm - prime tourism hours
+      let base = 120;
+      if (i === 10 || i === 14 || i === 18) base = 450; // Peak hours
+      else if (i >= 8 && i <= 20) base = 200 + Math.sin((i - 8) * Math.PI / 12) * 150;
+      else base = 80; // Off-hours still active
+      return Math.floor(base + Math.random() * 50);
     }),
     
-    // Video Completion by Attraction
+    // Video Completion by Attraction - High engagement
     completionByAttraction: attractions.map(a => ({
       name: a.name,
-      completion: 50 + Math.random() * 40,
-      views: views[a.id] || Math.floor(Math.random() * 500)
+      completion: 72 + Math.random() * 18, // 72-90% completion rate
+      views: Math.max(views[a.id] || 0, Math.floor(1200 + Math.random() * 1800)) // Always show high views: 1200-3000
     })),
     
-    // Commercial Metrics
-    revenueByAttraction: attractions.map(a => ({
-      name: a.name,
-      revenue: (views[a.id] || 0) * (2.5 + Math.random() * 3.5), // $ per view
-      engagement: 60 + Math.random() * 35
-    })),
-    
-    // Weekly Trends (last 7 days)
-    weeklyTrends: Array.from({length: 7}, (_, i) => {
-      const day = new Date();
-      day.setDate(day.getDate() - (6 - i));
+    // Commercial Metrics - Positive revenue trends with high revenue
+    revenueByAttraction: attractions.map(a => {
+      const baseViews = Math.max(views[a.id] || 0, Math.floor(1200 + Math.random() * 1800)); // Always use high views
+      // Higher revenue per view: $8-15 per view, showing strong monetization
+      const revenuePerView = 8.5 + Math.random() * 6.5;
+      const totalRevenue = baseViews * revenuePerView;
+      // Ensure minimum revenue of $15,000 per attraction
       return {
-        day: day.toLocaleDateString('en-US', { weekday: 'short' }),
-        sessions: 400 + Math.sin(i * 0.8) * 150 + Math.random() * 100,
-        revenue: 1200 + Math.sin(i * 0.8) * 500 + Math.random() * 300
+        name: a.name,
+        revenue: Math.max(totalRevenue, Math.floor(15000 + Math.random() * 25000)), // High revenue: $15K-$40K+ per attraction
+        engagement: 75 + Math.random() * 20 // 75-95% engagement
       };
     }),
     
-    // Tourism Metrics
+    // Weekly Trends (last 7 days) - Showing growth trend
+    weeklyTrends: Array.from({length: 7}, (_, i) => {
+      const day = new Date();
+      day.setDate(day.getDate() - (6 - i));
+      // Growing trend with weekend peaks
+      const isWeekend = day.getDay() === 0 || day.getDay() === 6;
+      const baseSessions = 3200 + (i * 180); // Growing trend
+      const baseRevenue = 12800 + (i * 720); // Growing revenue
+      return {
+        day: day.toLocaleDateString('en-US', { weekday: 'short' }),
+        sessions: Math.floor(baseSessions + (isWeekend ? 400 : 0) + Math.sin(i * 0.8) * 200 + Math.random() * 150),
+        revenue: Math.floor(baseRevenue + (isWeekend ? 1600 : 0) + Math.sin(i * 0.8) * 800 + Math.random() * 400)
+      };
+    }),
+    
+    // Tourism Metrics - Strong city performance
     cityData: attractions.reduce((acc, a) => {
       const city = a.city || 'Unknown';
       if (!acc[city]) {
@@ -96,56 +110,73 @@ function generateSyntheticData(attractions, views, visits) {
           attractions: 0
         };
       }
-      acc[city].visits += views[a.id] || Math.floor(Math.random() * 300);
-      acc[city].revenue += (views[a.id] || 0) * (2 + Math.random() * 4);
+      const baseVisits = views[a.id] || Math.floor(1200 + Math.random() * 800);
+      acc[city].visits += baseVisits;
+      acc[city].revenue += baseVisits * (4.5 + Math.random() * 2.5); // Higher revenue per visit
       acc[city].attractions += 1;
       return acc;
     }, {}),
     
-    // Location-based engagement
+    // Location-based engagement - High engagement rates
     locationEngagement: attractions
       .filter(a => a.type === 'location')
       .map(a => ({
         name: a.name,
-        engagement: 70 + Math.random() * 25,
-        visitors: views[a.id] || Math.floor(Math.random() * 400)
+        engagement: 82 + Math.random() * 13, // 82-95% engagement
+        visitors: views[a.id] || Math.floor(1500 + Math.random() * 1000)
       })),
     
-    // Tourist Flow (last 7 days)
+    // Tourist Flow (last 7 days) - Growing trend
     touristFlow: Array.from({length: 7}, (_, i) => {
       const date = new Date();
       date.setDate(date.getDate() - (6 - i));
+      const baseVisitors = 2800 + (i * 120); // Growing daily
       return {
         date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        visitors: 850 + Math.sin(i * 0.9) * 200 + Math.random() * 150
+        visitors: Math.floor(baseVisitors + Math.sin(i * 0.9) * 300 + Math.random() * 200)
       };
     }),
     
-    // Seasonal Trends (last 12 months)
+    // Seasonal Trends (last 12 months) - Strong growth pattern
     seasonalTrends: Array.from({length: 12}, (_, i) => {
       const month = new Date(2024, i, 1);
-      // Higher in summer months (Dec-Feb in Australia)
+      // Higher in summer months (Dec-Feb in Australia) with growth trend
       const isPeak = i === 11 || i === 0 || i === 1;
+      const growthFactor = 1 + (i * 0.08); // 8% monthly growth
+      const baseVisitors = isPeak ? 8500 : 4200;
+      const baseRevenue = isPeak ? 34000 : 16800;
       return {
         month: month.toLocaleDateString('en-US', { month: 'short' }),
-        visitors: isPeak ? 2500 + Math.random() * 500 : 1200 + Math.random() * 400,
-        revenue: isPeak ? 8500 + Math.random() * 2000 : 4000 + Math.random() * 1500
+        visitors: Math.floor(baseVisitors * growthFactor + Math.random() * 800),
+        revenue: Math.floor(baseRevenue * growthFactor + Math.random() * 3200)
       };
     }),
     
-    // Conversion Funnel
+    // Conversion Funnel - Improved conversion rates
     conversionFunnel: {
-      'Page Views': 5421,
-      'AR Sessions Started': 3421,
-      'Markers Detected': 2687,
-      'Videos Played': 2156,
-      'Videos Completed': 1408
+      'Page Views': 38500,
+      'AR Sessions Started': 24500,
+      'Markers Detected': 21560,
+      'Videos Played': 19225,
+      'Videos Completed': 15075
     },
     
     // Active locations
     activeLocations: attractions.filter(a => 
       a.type === 'location' && (views[a.id] || 0) > 0
-    ).length || attractions.filter(a => a.type === 'location').length
+    ).length || attractions.filter(a => a.type === 'location').length,
+    
+    // Total Revenue Potential - High futuristic value
+    totalRevenuePotential: (() => {
+      const revenueArray = attractions.map(a => {
+        const baseViews = views[a.id] || Math.floor(1200 + Math.random() * 1800);
+        const revenuePerView = 8.5 + Math.random() * 6.5;
+        return baseViews * revenuePerView;
+      });
+      const calculated = revenueArray.reduce((sum, r) => sum + r, 0);
+      // Ensure minimum of $250K for futuristic appeal
+      return Math.max(250000, calculated);
+    })()
   };
 }
 
@@ -154,7 +185,21 @@ function updateKPIs(data) {
   document.getElementById('total-sessions').textContent = data.totalSessions.toLocaleString();
   document.getElementById('avg-session').textContent = `${data.avgSessionDuration.toFixed(1)}m`;
   document.getElementById('detection-rate').textContent = `${data.detectionRate.toFixed(1)}%`;
-  document.getElementById('revenue-potential').textContent = `$${Object.values(data.revenueByAttraction).reduce((sum, r) => sum + r.revenue, 0).toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+  
+  // Use totalRevenuePotential from synthetic data, or calculate from revenueByAttraction
+  let revenuePotential = data.totalRevenuePotential;
+  
+  if (!revenuePotential || revenuePotential === 0) {
+    // Fallback: calculate from revenueByAttraction array
+    if (Array.isArray(data.revenueByAttraction) && data.revenueByAttraction.length > 0) {
+      revenuePotential = data.revenueByAttraction.reduce((sum, r) => sum + (r.revenue || 0), 0);
+    }
+    // Ensure minimum futuristic value of $250K
+    revenuePotential = Math.max(250000, revenuePotential || 0);
+  }
+  
+  document.getElementById('revenue-potential').textContent = `$${revenuePotential.toLocaleString(undefined, {maximumFractionDigits: 0})}`;
+  
   document.getElementById('active-locations').textContent = data.activeLocations;
 }
 
@@ -162,10 +207,14 @@ function renderAttractionsList(attractions, views, syntheticData) {
   const list = document.getElementById('list');
   const sorted = attractions
     .map(a => {
-      const viewCount = views[a.id] || 0;
-      const revenue = syntheticData.revenueByAttraction.find(r => r.name === a.name)?.revenue || 0;
+      // Use synthetic views instead of real views to ensure high positive numbers
+      const syntheticViews = syntheticData.completionByAttraction.find(c => c.name === a.name)?.views;
+      const viewCount = syntheticViews || Math.floor(1200 + Math.random() * 1800); // Fallback: 1200-3000 views
+      const revenue = syntheticData.revenueByAttraction.find(r => r.name === a.name)?.revenue;
+      // Ensure revenue is always a high positive number
+      const finalRevenue = revenue && revenue > 0 ? revenue : Math.floor(15000 + Math.random() * 25000); // Fallback: $15K-$40K
       const completion = syntheticData.completionByAttraction.find(c => c.name === a.name)?.completion || 0;
-      return { a, viewCount, revenue, completion };
+      return { a, viewCount, revenue: finalRevenue, completion };
     })
     .sort((x, y) => y.viewCount - x.viewCount);
 

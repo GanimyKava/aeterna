@@ -195,6 +195,19 @@ a.btn:hover {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+}
+
+.home-btn svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
 canvas {
   background: #ffffff;
   border-radius: 8px;
