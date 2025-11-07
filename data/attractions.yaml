@@ -3,14 +3,14 @@
   type: location
   marker:
     preset: "Pattern"
-    patternUrl: "assets/markers/pattern-Uluru_Australia.patt"
+    patternUrl: "./assets/markers/pattern-Uluru_Australia.patt"
   imageNFT:
-    nftBaseUrl: assets/nfts/Uluru_Australia
+    nftBaseUrl: "./assets/nfts/Uluru_Australia"
   location:
     latitude: -25.3444
     longitude: 131.0369
     radiusMeters: 200
-  videoUrl: "assets/videos/TheGeologicOddity_Uluru_Australia.mp4"
+  videoUrl: "./assets/videos/TheGeologicOddity_Uluru_Australia.mp4"
   thumbnail: ""
   city: Northern Territory
   description: "Sacred sandstone monolith in the heart of Australia. A spiritual site for the Anangu people and one of Australia's most iconic natural landmarks."
@@ -22,12 +22,12 @@
     preset: "Pattern"
     patternUrl: "assets/markers/pattern-MCG_Australia.patt"
   imageNFT:
-    nftBaseUrl: assets/nfts/MCG_Australia
+    nftBaseUrl: "./assets/nfts/MCG_Australia"
   location:
     latitude: -37.8199
     longitude: 144.9834
     radiusMeters: 150
-  videoUrl: assets/videos/Sir-Don-Bradman_100-Century_SCG_15-11-1947.mp4
+  videoUrl: "./assets/videos/Sir-Don-Bradman_100-Century_SCG_15-11-1947.mp4"
   thumbnail: ""
   city: Melbourne
   description: "Australia's largest stadium and the spiritual home of Australian cricket and Australian Rules Football. Hosted the 1956 Olympic Games."
