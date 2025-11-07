@@ -1,0 +1,93 @@
+{
+  "token": {
+    "access_token": "mock-access-token",
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "scope": ""
+  },
+  "simSwap": {
+    "eligible": true,
+    "swapCount": 0,
+    "reason": "NO_RECENT_SIM_SWAP"
+  },
+  "locationRetrieval": {
+    "location": {
+      "time": "2025-11-07T17:10:24Z",
+      "coordinates": {
+        "lat": -33.8568,
+        "lon": 151.2153
+      },
+      "accuracy": {
+        "horizontal": 420
+      }
+    },
+    "confidence": 0.82
+  },
+  "populationDensity": {
+    "cells": [
+      {
+        "center": {
+          "lat": 37.3383,
+          "lon": -121.885
+        },
+        "count": 152,
+        "confidence": 0.67
+      },
+      {
+        "center": {
+          "lat": 37.3421,
+          "lon": -121.879
+        },
+        "count": 98,
+        "confidence": 0.62
+      }
+    ],
+    "timeRange": {
+      "start": "2025-11-07T16:00:00Z",
+      "end": "2025-11-07T17:00:00Z"
+    }
+  },
+  "qosProfiles": {
+    "profiles": [
+      {
+        "profileId": "premium-video",
+        "downlink": {
+          "maxBitRate": "50Mbps",
+          "guaranteedBitRate": "20Mbps"
+        },
+        "uplink": {
+          "maxBitRate": "10Mbps",
+          "guaranteedBitRate": "5Mbps"
+        },
+        "latency": {
+          "target": 30,
+          "unit": "ms"
+        }
+      },
+      {
+        "profileId": "gaming-low-latency",
+        "latency": {
+          "target": 15,
+          "unit": "ms"
+        },
+        "jitter": {
+          "target": 5,
+          "unit": "ms"
+        }
+      }
+    ]
+  },
+  "qualityOnDemand": {
+    "sessionId": "qod-6f8892d6",
+    "status": "REQUESTED",
+    "requestedProfile": "gaming-low-latency",
+    "expiresAt": "2025-11-07T17:45:24Z",
+    "callbacks": [
+      {
+        "event": "STATUS_CHANGE",
+        "url": "https://yourapp.example.com/qod/status"
+      }
+    ]
+  }
+}
+

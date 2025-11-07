@@ -228,6 +228,62 @@ a-scene > .a-canvas {
   display: block;
 }
 
+/* Location page camera placeholder */
+.ar-location-page {
+  background: #000;
+  color: #fff;
+}
+
+.ar-location-page .camera-placeholder {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.85));
+  text-align: center;
+  z-index: 100;
+}
+
+
+.ar-location-page .camera-placeholder__frame {
+  width: min(480px, 80vw);
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 6px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.ar-location-page .camera-placeholder__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.8) brightness(0.95);
+}
+
+.ar-location-page .camera-placeholder__message {
+  font-size: 1rem;
+  max-width: min(560px, 90vw);
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.04em;
+}
+
+.ar-location-page a-scene,
+.ar-location-page a-scene .a-canvas,
+.ar-location-page a-scene video {
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* iPad and Tablet optimizations - Portrait orientation */
 @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait),
        (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait) {

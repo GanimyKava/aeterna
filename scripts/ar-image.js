@@ -2,6 +2,24 @@
 // Dynamically loads all attractions from attractions.yaml and sets up NFT markers
 window.EternityMetrics.recordVisit('ar-image');
 
+(function requestQodForImagePage() {
+  const phoneNumber = "+61491570156";
+  const profileId = "gaming-low-latency";
+
+  if (!window.CamaraApi || typeof CamaraApi.requestQualityOnDemand !== "function") {
+    console.warn("CamaraApi.requestQualityOnDemand is unavailable on ar-image page");
+    return;
+  }
+
+  CamaraApi.requestQualityOnDemand(phoneNumber, profileId)
+    .then((session) => {
+      alert("QoD requested for image-based AR: " + (session && session.sessionId ? session.sessionId : "mock-session"));
+    })
+    .catch((error) => {
+      console.error("Failed to request QoD for image-based AR", error);
+    });
+})();
+
 const nftRoot = document.getElementById('nftRoot');
 const uiVideo = document.getElementById('video');
 

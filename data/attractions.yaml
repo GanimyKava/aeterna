@@ -32,22 +32,22 @@
   city: Melbourne
   description: "Australia's largest stadium and the spiritual home of Australian cricket and Australian Rules Football. Hosted the 1956 Olympic Games."
 
-# - id: sydney-opera-house
-#   name: Sydney Opera House
-#   type: location
-#   marker:
-#     preset: ""
-#     patternUrl: ""
-#   imageNFT:
-#     nftBaseUrl: ""
-#   location:
-#     latitude: -33.8568
-#     longitude: 151.2153
-#     radiusMeters: 150
-#   videoUrl: /assets/videos/mov_bbb.mp4
-#   thumbnail: ""
-#   city: Sydney
-#   description: "One of the world's most famous performing arts venues and an architectural masterpiece. Designed by Jørn Utzon, it's a UNESCO World Heritage Site."
+- id: sydney-opera-house
+  name: Sydney Opera House
+  type: location
+  marker:
+    preset: ""
+    patternUrl: ""
+  imageNFT:
+    nftBaseUrl: ""
+  location:
+    latitude: -33.8568
+    longitude: 151.2153
+    radiusMeters: 150
+  videoUrl: /assets/videos/TheSydneyOperaHouse_BBC_Australia.mp4
+  thumbnail: ""
+  city: Sydney
+  description: "One of the world's most famous performing arts venues and an architectural masterpiece. Designed by Jørn Utzon, it's a UNESCO World Heritage Site."
 
 # - id: harbour-bridge
 #   name: Sydney Harbour Bridge

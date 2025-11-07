@@ -336,6 +336,7 @@ For production deployment:
 - **MCG Image**: [Austadiums](https://www.austadiums.com/stadiums/photos/MCG-boxing-day-test-23.jpg)
 - **Uluru Video**: [The Geologic Oddity in Australia](https://www.youtube.com/watch?v=6gnGWyEFN9w)
 - **MCG Video**: [Sir Don Bradman's 100th Century](https://www.youtube.com/watch?v=6su2wBV60Gg)
+- **Sydney Opera House**: [Sydney Opera House](https://www.youtube.com/watch?v=iH_bNwQ-R2A)
 
 ---
 

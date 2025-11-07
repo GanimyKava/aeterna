@@ -1,6 +1,24 @@
 // Marker-based AR page initialization
 window.EternityMetrics.recordVisit('ar-marker');
 
+(function requestQodForMarkerPage() {
+  const phoneNumber = "+61491570156";
+  const profileId = "premium-video";
+
+  if (!window.CamaraApi || typeof CamaraApi.requestQualityOnDemand !== "function") {
+    console.warn("CamaraApi.requestQualityOnDemand is unavailable on ar-marker page");
+    return;
+  }
+
+  CamaraApi.requestQualityOnDemand(phoneNumber, profileId)
+    .then((session) => {
+      alert("QoD requested for marker-based AR: " + (session && session.sessionId ? session.sessionId : "mock-session"));
+    })
+    .catch((error) => {
+      console.error("Failed to request QoD for marker-based AR", error);
+    });
+})();
+
 const markerRoot = document.getElementById('markerRoot');
 const uiVideo = document.getElementById('video');
 
@@ -97,7 +115,6 @@ function setupForAttraction(a) {
         uiVideo.autoplay = true;
         // Show the video element when marker is detected
         uiVideo.classList.add('visible');
-        uiVideo.style.display = 'block';
       }
       
       loaded = true;
@@ -187,7 +204,6 @@ function setupForAttraction(a) {
         uiVideo.muted = false;
         uiVideo.currentTime = 0;
         // Show video when marker is detected again
-        uiVideo.style.display = 'block';
         uiVideo.classList.add('visible');
         uiVideo.play().catch(err => {
           if (err.name === 'NotAllowedError') {
@@ -215,7 +231,6 @@ function setupForAttraction(a) {
       uiVideo.pause();
       uiVideo.currentTime = 0; // Reset to beginning
       // Hide video when marker is lost
-      uiVideo.style.display = 'none';
       uiVideo.classList.remove('visible');
     }
   });
@@ -489,7 +504,6 @@ function setupForAttraction(a) {
         uiVideo.pause();
         uiVideo.currentTime = 0;
         uiVideo.src = '';
-        uiVideo.style.display = 'none';
         uiVideo.classList.remove('visible');
       }
       

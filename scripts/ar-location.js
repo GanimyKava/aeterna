@@ -1,6 +1,43 @@
 // Location-based AR page initialization
 window.EternityMetrics.recordVisit('ar-location');
 
+(function requestQodForLocationPage() {
+  const phoneNumber = "+61491570156";
+  const profileId = "premium-video";
+
+  if (!window.CamaraApi || typeof CamaraApi.requestQualityOnDemand !== "function") {
+    console.warn("CamaraApi.requestQualityOnDemand is unavailable on ar-location page");
+    return;
+  }
+
+  CamaraApi.requestQualityOnDemand(phoneNumber, profileId)
+    .then((session) => {
+      alert("QoD requested for location-based AR: " + (session && session.sessionId ? session.sessionId : "mock-session"));
+    })
+    .catch((error) => {
+      console.error("Failed to request QoD for location-based AR", error);
+    });
+})();
+
+(function retrieveLocationOnLoad() {
+  const phoneNumber = "+61491570156";
+
+  if (!window.CamaraApi || typeof CamaraApi.retrieveLocation !== "function") {
+    console.warn("CamaraApi.retrieveLocation is unavailable on ar-location page");
+    return;
+  }
+
+  CamaraApi.retrieveLocation(phoneNumber)
+    .then((response) => {
+      const coords = response && response.location && response.location.coordinates;
+      const label = coords ? `${coords.lat}, ${coords.lon}` : "unknown";
+      alert(`Retrieved device location: ${label}`);
+    })
+    .catch((error) => {
+      console.error("Failed to retrieve location", error);
+    });
+})();
+
 const gpsRoot = document.getElementById('gpsRoot');
 const uiVideo = document.getElementById('video');
 
@@ -23,13 +60,50 @@ function createGpsEntity(a) {
 
   function tryLoadVideo(userLat, userLon) {
     const d = window.EternityData.haversineMeters(userLat, userLon, a.location.latitude, a.location.longitude);
+    const radius = a.location.radiusMeters || 80;
     const isLoaded = loadedVideos.get(a.id);
-    
-    if (!isLoaded && d <= (a.location.radiusMeters || 80)) {
-      uiVideo.src = a.videoUrl;
-      uiVideo.play().catch(()=>{});
-      loadedVideos.set(a.id, true);
-      window.EternityMetrics.recordAttractionView(a.id);
+
+    const ensureVideoPlaying = () => {
+      if (!uiVideo) return;
+      uiVideo.classList.add('visible');
+      uiVideo.loop = true;
+      uiVideo.autoplay = true;
+      uiVideo.muted = false;
+      uiVideo.play().catch(err => {
+        if (err && err.name === 'NotAllowedError') {
+          uiVideo.muted = true;
+          uiVideo.play().then(() => {
+            setTimeout(() => {
+              uiVideo.muted = false;
+            }, 150);
+          }).catch(() => {});
+        }
+      });
+    };
+
+    if (d <= radius) {
+      if (!isLoaded) {
+        if (uiVideo) {
+          uiVideo.src = a.videoUrl;
+          uiVideo.currentTime = 0;
+          uiVideo.load();
+          uiVideo.addEventListener('loadeddata', ensureVideoPlaying, { once: true });
+          uiVideo.addEventListener('canplay', ensureVideoPlaying, { once: true });
+          ensureVideoPlaying();
+        }
+        loadedVideos.set(a.id, true);
+        window.EternityMetrics.recordAttractionView(a.id);
+      } else {
+        ensureVideoPlaying();
+      }
+    } else if (isLoaded) {
+      if (uiVideo) {
+        uiVideo.pause();
+        uiVideo.currentTime = 0;
+        uiVideo.classList.remove('visible');
+        uiVideo.src = '';
+      }
+      loadedVideos.delete(a.id);
     }
   }
 
@@ -77,14 +151,32 @@ window.addEventListener('gps-camera-update-position', (e) => {
       a.location.longitude &&
       a.videoUrl
     );
+
+    const selected = list.find(a => a.id === 'sydney-opera-house');
+    const finalList = selected ? [selected] : list;
     
-    // Create GPS entities for all location attractions dynamically
-    list.forEach(attraction => {
+    // Create GPS entities for selected location attractions
+    finalList.forEach(attraction => {
       const entity = createGpsEntity(attraction);
       if (entity) {
         gpsRoot.appendChild(entity);
+        if (typeof entity.__tryLoadVideo === 'function') {
+          entity.__tryLoadVideo(attraction.location.latitude, attraction.location.longitude);
+        }
       }
     });
+
+    if (finalList.length > 0) {
+      const reference = finalList[0];
+      window.dispatchEvent(new CustomEvent('gps-camera-update-position', {
+        detail: {
+          position: {
+            latitude: reference.location.latitude,
+            longitude: reference.location.longitude
+          }
+        }
+      }));
+    }
   } catch (e) {
     console.error('Error loading location attractions:', e);
   }
@@ -100,7 +192,7 @@ window.addEventListener('gps-camera-update-position', (e) => {
         uiVideo.pause();
         uiVideo.currentTime = 0;
         uiVideo.src = '';
-        uiVideo.style.display = 'none';
+        uiVideo.classList.remove('visible');
       }
       
       // Stop all A-Frame video elements
