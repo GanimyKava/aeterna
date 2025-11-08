@@ -58,91 +58,42 @@ This prototype demonstrates integration with **CAMARA APIs (GSMA Open Gateway)**
 
 ```mermaid
 flowchart TD
-  U[Mobile Browser HTTPS + Camera] -->|Access| INDEX[index.html Mode Selection]
-  
-  INDEX -->|User Choice| AR_MARKER[ar-marker.html Marker-based AR]
-  INDEX -->|User Choice| AR_IMAGE[ar-image.html Image NFT AR]
-  INDEX -->|User Choice| AR_LOC[ar-location.html Location-based AR]
-  INDEX -->|Admin| ADMIN[admin.html Content Editor]
-  INDEX -->|Analytics| DASH[dashboard.html Metrics View]
-  
-  AR_MARKER -->|Loads| DATA[data YAML Parser]
-  AR_IMAGE -->|Loads| DATA
-  AR_LOC -->|Loads| DATA
-  ADMIN -->|Edits| DATA
-  
-  DATA -->|Fetches| YAML[data/attractions.yaml]
-  DATA -->|Caches| LS[localStorage Overrides and Metrics]
-  
-  AR_MARKER -->|Uses| ARJS_MARKER[AR.js aframe-ar]
-  AR_IMAGE -->|Uses| ARJS_NFT[AR.js aframe-ar-nft]
-  AR_LOC -->|Uses| ARJS_GPS[AR.js ar-threex-location-only]
-  
-  ARJS_MARKER -->|Renders| AFRAME[A-Frame WebXR Scene]
-  ARJS_NFT -->|Renders| AFRAME
-  ARJS_GPS -->|Renders| AFRAME
-  
-  AFRAME -->|Lazy Loads| ASSETS[assets Videos Markers NFTs]
-  
-  subgraph Future Integration
-    BE[Backend API] -->|OAuth2| OPGW[Operator Open Gateway]
-    BE -->|Device Location| LOC[CAMARA Device Location]
-    BE -->|QoS Session| QOD[CAMARA Quality on Demand]
-  end
-  
-  AFRAME -. placeholder .-> BE
+  U[Browser + Camera] --> SPA[React SPA (Vite)]
+  SPA -->|REST JSON| API[FastAPI /api]
+  SPA --> AR[A-Frame + AR.js runtime]
+  SPA --> Metrics[Zustand metrics store]
+  API --> DB[(SQLite via SQLAlchemy)]
+  API <-->|Seed & Export| YAML[backend/store/data/attractions.yaml]
+  API --> CAMARA[CAMARA sample responses]
+  API --> WS[/time-weave WebSocket/]
+  SPA --> CAMARA_JS[CAMARA front-end adapter]
+  API -. future .-> OPGW[Operator Open Gateway]
 ```
 
-### Frontend Architecture
+### Frontend (React + Vite)
+- SPA lives in `frontend/` with TypeScript, React Router, React Query, and component-scoped CSS modules.
+- AR scenes re-use A-Frame + AR.js via dynamic script loading to preserve marker, image NFT, and geo experiences.
+- Admin Studio persists edits through the API (`PUT /api/attractions`) while still allowing YAML/JSON download.
+- Metrics and engagement tracking use Zustand + `localStorage`, feeding the real-time dashboard visualisations.
+- CAMARA helper (`services/camaraApi.ts`) mirrors the original demo flows (SIM swap, location retrieval, QoD).
 
-#### **Entry Point & Navigation**
-- **`index.html`**: Main landing page with AR mode selection (Marker, Image NFT, Location)
-- **`view/`**: Dedicated HTML pages for each AR mode and admin tools
-  - `ar-marker.html`: Pattern/barcode marker detection
-  - `ar-image.html`: Image NFT tracking
-  - `ar-location.html`: GPS-based geofencing
-  - `admin.html`: YAML/JSON content editor
-  - `dashboard.html`: Analytics and metrics visualization
+### Backend (FastAPI + SQLAlchemy)
+- API implemented under `backend/app` with SQLAlchemy models, CRUD helpers, and Pydantic schemas.
+- SQLite database seeds from `backend/store/data/attractions.yaml` on first boot and supports full CRUD + bulk replacement.
+- `/analytics-chat` and `/time-weave` reproduce the Time-Weave assistant and WebSocket echo stream.
+- Serves production React build and AR media, with optional HTTPS bootstrap via `start-server.sh`.
+- Configurable through env vars (`DATABASE_URL`, `CORS_ORIGINS`, etc.) with sensible defaults for local dev.
 
-#### **Core Scripts**
-- **`data.js`**: 
-  - Loads and parses `data/attractions.yaml` using js-yaml
-  - Manages localStorage overrides for admin edits
-  - Provides distance calculation utilities (Haversine formula)
-- **`app.js`**: Shared utility functions (querySelector helpers)
-- **`metrics.js`**: LocalStorage-based analytics tracking
-- **AR-specific scripts**:
-  - `ar-marker.js`: Marker detection and video playback logic
-  - `ar-image.js`: NFT marker tracking and content overlay
-  - `ar-location.js`: GPS-based attraction triggering with radius checks
-
-#### **AR Framework Stack**
-- **A-Frame 1.6.0**: WebXR framework for 3D scene rendering
-- **AR.js 3.4.7**: 
-  - `aframe-ar.js`: Marker-based tracking (Hiro, Kanji, custom patterns, barcodes)
-  - `aframe-ar-nft.js`: Image recognition and NFT marker tracking
-  - `ar-threex-location-only.js`: GPS camera and location-based entity placement
-
-#### **Data Flow**
-1. **Configuration**: YAML file defines attractions with AR type, coordinates, videos, markers
-2. **Loading**: `data.js` fetches YAML, applies localStorage overrides if present
-3. **Initialization**: AR pages load attractions and dynamically create A-Frame entities
-4. **Detection**: AR.js tracks markers/GPS and triggers video loading
-5. **Playback**: Videos lazy-load only when targets are detected or user enters geofence
-6. **Analytics**: Metrics recorded to localStorage for dashboard visualization
-
-### Backend Integration (Future)
-- **CAMARA APIs**: Placeholder for operator network capabilities
-  - Device Location API: Network-verified positioning
-  - Quality on Demand API: Enhanced network performance during AR sessions
-- **Implementation**: Requires secure backend with OAuth2 client credentials
-- **Current State**: Frontend includes hooks for future API integration
+### Data & Assets
+- `backend/store/data/attractions.yaml` remains the canonical definition; FastAPI exports back to YAML for version control.
+- Videos, markers, NFT packs, and imagery live under `backend/store/assets/` and `backend/store/images/`, surfaced via `/assets` and `/images`.
+- Local metrics stay client-side; analytics synthesis combines persisted visits with synthetic growth curves.
 
 ---
 
 ## 📊 Data Model
 
-Attractions are defined in `data/attractions.yaml` with support for multiple AR types:
+Attractions seed from `backend/store/data/attractions.yaml` (and persist in SQLite) with support for multiple AR types:
 
 ```yaml
 - id: mcg-australia
@@ -162,194 +113,120 @@ Attractions are defined in `data/attractions.yaml` with support for multiple AR 
 ```
 
 ### Supported AR Types
-- **`marker`**: Pattern-based markers (Hiro, Kanji, custom patterns, or barcode)
-- **`imageNFT`**: Image recognition using NFT markers
-- **`location`**: GPS-based geofencing with configurable radius
+- **`marker`**: Pattern markers, preset Hiro/Kanji, or barcodes
+- **`imageNFT`**: NFT-based image tracking bundles
+- **`location`**: GPS geofencing with configurable radius
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.10+
+- Node.js 18+ (npm)
 - Modern mobile browser with camera access (Chrome, Safari, Firefox)
-- HTTPS connection (required for camera/geolocation APIs)
-- Python 3.x (for local development server)
 
-### Local Development
+### Backend (FastAPI)
+```bash
+python3 -m venv backend/.venv
+source backend/.venv/bin/activate
+python -m pip install -e backend
+uvicorn backend.app.main:app --reload --port 8000
+```
+- API available at `http://localhost:8000`
+- Database stored at `backend/app.db` (auto-created + seeded from YAML)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd aeterna
-   ```
+### Frontend (React SPA)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+- Vite serves the SPA at `http://localhost:5173`
+- Dev proxy forwards `/api`, `/analytics-chat`, `/time-weave`, and asset requests to FastAPI
+- Optional HTTPS for camera testing:
+  ```bash
+  ./generate-self-signed.sh
+  npm run dev
+  ```
+  If `certs/localhost-*.pem` exist, Vite serves over HTTPS so mobile browsers accept camera/geolocation APIs.
 
-2. **Start the HTTPS development server**
-   ```bash
-   ./start-server.sh
-   ```
-   Or manually:
-   ```bash
-   python3 serve_https.py
-   ```
+### HTTPS Test Harness
+Use the bundled helper to build the SPA, ensure deps exist, and start FastAPI with self-signed TLS (needed for camera + geolocation in mobile Chrome/Safari):
+```bash
+./start-server.sh
+```
+The site becomes available at `https://localhost:8443`. Accept the certificate warning and grant camera/location permissions when prompted.
 
-3. **Access the application**
-   - Open `https://localhost:8443` on your mobile device
-   - Accept the self-signed certificate warning
-   - Grant camera and location permissions when prompted
-
-### Runtime Flow
-
-#### **Marker-Based AR** (`ar-marker.html`)
-1. Page loads → Camera permission requested (HTTPS only)
-2. `data.js` fetches `attractions.yaml` and loads attractions
-3. For each attraction with marker config:
-   - Creates A-Frame marker entity (preset, pattern, or barcode)
-   - Creates video asset element (initially empty, `preload="none"`)
-4. When marker detected:
-   - `markerFound` event fires
-   - Video source set lazily from `videoUrl`
-   - Video playback starts automatically
-   - Metrics recorded to localStorage
-
-#### **Image NFT AR** (`ar-image.html`)
-1. Page loads → Camera permission requested
-2. Attractions with `imageNFT.nftBaseUrl` are loaded
-3. For each attraction:
-   - Creates `<a-nft>` element with NFT base URL
-   - Creates video plane entity (initially hidden)
-4. When image recognized:
-   - `markerFound` event fires
-   - Video loads from `videoUrl` (lazy loading)
-   - Video plane becomes visible in AR scene
-   - UI video overlay also plays
-
-#### **Location-Based AR** (`ar-location.html`)
-1. Page loads → Camera and geolocation permissions requested
-2. Attractions with `location` coordinates are loaded
-3. For each attraction:
-   - Creates GPS entity with `gps-entity-place` component
-   - Stores distance check function
-4. GPS position updates trigger:
-   - Haversine distance calculation for all attractions
-   - If within `radiusMeters`: video loads and plays
-   - Hysteresis prevents flickering at boundary edges
-   - Last position cached in localStorage
+### Runtime Flow (SPA)
+1. React Router mounts pages for Marker, Image NFT, and Location AR modes.
+2. `useAttractions` loads attractions via FastAPI (`/api/attractions`) and caches the result.
+3. A-Frame scenes bootstrap once AR.js scripts finish loading (`useArScripts` hook).
+4. Marker/image/location handlers lazily attach videos, request CAMARA QoD mocks, and stream metrics to Zustand.
+5. Admin Studio writes updates back to the API; dashboard fuses persisted metrics with synthetic growth projections.
 
 ---
 
 ## 📦 Deployment
 
-### GitHub Pages (Recommended)
+### Docker Compose
+```bash
+cd frontend
+./generate-self-signed.sh
+cd ..
+docker compose up --build
+```
+- Serves the API on `http://localhost:8000` and the SPA on `https://localhost:8443`
+- Trust `frontend/certs/root/rootCA.pem` in your browser for warning-free HTTPS.
+- Videos, markers, NFT packs, and imagery live under `backend/store/assets/` and `backend/store/images/`, surfaced via `/assets` and `/images`.
 
-This repository includes automated deployment via GitHub Actions:
+### Standalone Containers
+- **Frontend**
+  ```bash
+  docker build -t echoes-frontend -f frontend/Dockerfile .
+  docker run --rm -p 8080:80 echoes-frontend
+  ```
+- **Backend**
+  ```bash
+  docker build -t echoes-backend -f backend/Dockerfile .
+  docker run --rm -p 8000:8000 echoes-backend
+  ```
+- When running separately, point the frontend image at the backend by providing matching network/proxy rules (see `frontend/nginx.conf`).
 
-1. **Enable GitHub Pages**
-   - Navigate to Settings → Pages
-   - Set Source to "GitHub Actions"
-
-2. **Automatic Deployment**
-   - Push to `main` branch
-   - Workflow at `.github/workflows/deploy-pages.yml` handles deployment
-   - Site available at `https://<username>.github.io/aeterna`
-
-### Custom HTTPS Server
-
-For production deployment:
-- Use a valid SSL certificate (Let's Encrypt recommended)
-- Ensure all asset paths are relative for portability
-- Configure CORS if needed for cross-origin requests
+### Manual Production Build
+```bash
+npm --prefix frontend install
+npm --prefix frontend run build
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+```
+- Place behind a reverse proxy (nginx, Caddy, Traefik) for TLS in production
+- Configure env vars (`DATABASE_URL`, `CORS_ORIGINS`, etc.) as needed
 
 ---
 
 ## 🛠️ Development Notes
 
 ### Permissions
-- Camera and location permissions are requested only on AR pages (`ar-*.html`)
-- Graceful degradation if permissions are denied
-- Location-based AR requires both camera and geolocation permissions
+- Camera and location prompts run from the React AR routes; they require HTTPS (use `start-server.sh` locally).
+- Marker/Image pages gracefully degrade if permissions are denied; Location mode hides attractions until GPS lock.
 
 ### Data Management
-- **Primary Source**: `data/attractions.yaml` defines all attractions
-- **Local Overrides**: Admin interface can save edits to `localStorage` (`eternity.attractions.override`)
-- **Format Support**: Admin supports both YAML and JSON import/export
-- **Distance Calculations**: Uses Haversine formula for GPS-based proximity checks
+- SQLite (`backend/app.db`) is authoritative during runtime and mirrors the YAML schema.
+- Admin Studio can export fresh YAML via `/api/attractions/export` for check-in to version control.
+- Haversine utilities and QoD mocks were ported intact from the legacy scripts.
 
 ### Media Loading
-- **Lazy Loading**: Videos use `preload="none"` and `src` is set only after detection
-- **Multiple Attractions**: All three AR modes support multiple attractions simultaneously
-- **Asset Organization**: 
-  - Videos: `assets/videos/`
-  - Markers: `assets/markers/*.patt`
-  - NFT markers: `assets/nfts/` (requires `.fset`, `.fset3`, `.iset` files)
+- Videos remain lazily loaded; React helpers attach `src` only after detection to conserve bandwidth.
+- Asset folders (`backend/store/assets/videos`, `.../markers`, `.../nfts`) are served directly by FastAPI at `/assets`.
+- NFT bundles (`.fset`, `.fset3`, `.iset`) are copied as-is; ensure they ship with the deployment artifact.
+- A-Frame and AR.js bundles ship with the SPA (`frontend/public/scripts/**`) and are served at `/scripts/...` without external CDNs.
+- AR.js bundles load per experience profile (`marker`, `image`, `marker+location`) to avoid duplicate component registration.
 
-### Analytics
-- **Storage**: Metrics stored in `localStorage` (`eternity.metrics.v1`)
-- **Tracking**: Page visits, attraction views, and video plays
-- **Dashboard**: `dashboard.html` visualizes collected metrics
+### Metrics & Analytics
+- Zustand persist middleware keeps metrics in `localStorage` (`eternity.metrics.v1`).
+- Dashboard synthesises the stored metrics with generated growth curves (see `features/dashboard/`).
+- `/analytics-chat` and `/time-weave` remain mock endpoints for future operator integrations.
 
 ### Browser Compatibility
-- **iOS Safari**: Full support (12.2+)
-- **Android Chrome**: Full support
-- **Desktop**: Limited (camera access required, primarily for testing)
-
----
-
-## 🔮 Future Enhancements
-
-### Short-Term
-- [ ] Backend integration with Telstra Open Gateway (CAMARA)
-- [ ] Explicit consent UX flows for location and QoD
-- [ ] Analytics integration (PostHog/Google Analytics)
-
-### Long-Term
-- [ ] Offline/Lite mode with progressive fallback
-- [ ] Multi-language subtitles and audio tracks
-- [ ] Content Management System (CMS) integration
-- [ ] Enhanced stabilization and pose estimation
-- [ ] Anonymized engagement and QoS metrics dashboard
-
----
-
-## 📚 Technology Stack
-
-| Component | Technology |
-|-----------|-----------|
-| **AR Framework** | A-Frame 1.6.0 |
-| **AR Tracking** | AR.js 3.4.7 |
-| **Frontend** | Vanilla JavaScript, HTML5 |
-| **Styling** | CSS3 (Mobile-First) |
-| **Data Format** | YAML (with JSON support) |
-| **Deployment** | GitHub Pages |
-| **Server** | Python HTTPS Server |
-
----
-
-## 🙏 Credits & Acknowledgments
-
-### Open Source Libraries
-- **[AR.js](https://ar-js-org.github.io/AR.js-Docs/)** — WebAR framework for marker and location tracking
-- **[A-Frame](https://aframe.io/)** — WebXR framework for building VR/AR experiences
-- **[NFT Marker Creator](https://carnaux.github.io/NFT-Marker-Creator/#/)** — Tool for generating NFT markers
-
-### Media Sources
-- **Uluru Images**: [Wikimedia Commons](https://upload.wikimedia.org/wikipedia/commons/a/a8/ULURU.jpg)
-- **MCG Image**: [Austadiums](https://www.austadiums.com/stadiums/photos/MCG-boxing-day-test-23.jpg)
-- **Uluru Video**: [The Geologic Oddity in Australia](https://www.youtube.com/watch?v=6gnGWyEFN9w)
-- **MCG Video**: [Sir Don Bradman's 100th Century](https://www.youtube.com/watch?v=6su2wBV60Gg)
-- **Sydney Opera House**: [Sydney Opera House](https://www.youtube.com/watch?v=iH_bNwQ-R2A)
-
----
-
-## 📄 License
-
-This project is developed for the Telstra Hackathon. Please refer to individual component licenses for open-source dependencies.
-
----
-
-## 🤝 Contributing
-
-This is a hackathon project. For questions or suggestions, please open an issue or contact the development team.
-
----
-
-**Built for the Telstra Hackathon**
+- iOS Safari 12.2+ and Android Chrome tested; desktop works for validation but may lack camera hardware.
+- When testing on-device, use HTTPS and a public hostname or `

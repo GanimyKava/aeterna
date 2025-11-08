@@ -19,10 +19,16 @@ npm-debug.log*
 
 # Node modules (if you add npm dependencies later)
 node_modules/
+frontend/node_modules/
+frontend/build/
+backend/.venv/
+backend/app.db
+backend/app.db-journal
 
 # Local development
 .env
 .env.local
+frontend/certs/
 
 # ingnore certs folder
 certs/

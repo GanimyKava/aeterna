@@ -1,0 +1,117 @@
+.appShell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-primary);
+  background-image: var(--brand-radial);
+}
+
+.arShell {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(140deg, rgba(9, 27, 58, 0.92), rgba(14, 44, 84, 0.88));
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(96, 170, 250, 0.28);
+  box-shadow: 0 20px 38px rgba(2, 12, 30, 0.5);
+}
+
+.brand {
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent-sky), var(--brand-stronger));
+  box-shadow: 0 0 18px rgba(88, 227, 255, 0.65);
+}
+
+.nav {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.navItem {
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  background: rgba(21, 60, 118, 0.35);
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.navItem:hover {
+  background: rgba(255, 145, 77, 0.22);
+  border-color: rgba(255, 145, 77, 0.45);
+  color: #fff5e8;
+  transform: translateY(-1px);
+}
+
+.active {
+  background: linear-gradient(135deg, var(--brand-strong), var(--brand-stronger));
+  color: #2a1204;
+  box-shadow: 0 14px 30px rgba(255, 145, 77, 0.45);
+}
+
+.main {
+  flex: 1;
+  padding: 2.5rem 1.5rem 3rem;
+  width: min(1120px, 100%);
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.2rem;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .main {
+    padding: 2rem 1rem 2.75rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .nav {
+    justify-content: center;
+  }
+
+  .navItem {
+    flex: 1 1 calc(50% - 0.6rem);
+    min-width: 120px;
+    text-align: center;
+  }
+}
+
+

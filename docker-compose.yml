@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - PORT=8000
+    volumes:
+      - ./backend/store/assets:/app/backend/store/assets
+      - ./backend/store/images:/app/backend/store/images
+      - ./backend/store/data:/app/backend/store/data
+    expose:
+      - "8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/certs:/etc/nginx/ssl:ro
+    restart: unless-stopped
+
