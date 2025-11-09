@@ -1,29 +1,27 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAttractions } from "../hooks/useAttractions";
 import { useMetrics } from "../hooks/useMetrics";
 import { useArScripts } from "./ar/useArScripts";
-import { useArBodyClass } from "./ar/useArBodyClass";
 import { initMarkerExperience } from "./ar/initMarkerExperience";
 import "./ar/ArExperience.css";
 
 function MarkerPage(): JSX.Element {
-  useArBodyClass();
   const { data: attractions, isLoading, isError } = useAttractions();
   const { recordVisit, recordAttractionView, recordVideoPlay } = useMetrics();
   const { ready, error } = useArScripts("marker");
 
-  const sceneRef = useRef<HTMLElement>(null);
-  const markerRootRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const sceneRef = useRef<HTMLElement | null>(null);
+  const markerRootRef = useRef<HTMLElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (!ready || !attractions || !sceneRef.current) {
+    const scene = sceneRef.current;
+    if (!ready || !attractions || !scene) {
       return;
     }
 
     let dispose: (() => void) | undefined;
-    const scene = sceneRef.current;
 
     const start = () => {
       dispose = initMarkerExperience({
@@ -50,45 +48,43 @@ function MarkerPage(): JSX.Element {
     };
   }, [ready, attractions, recordVisit, recordAttractionView, recordVideoPlay]);
 
-  const hintContent = useMemo(() => {
-    if (!ready) {
-      return "Loading AR runtime...";
-    }
-    if (error) {
-      return `Failed to load AR scripts: ${error}`;
-    }
-    if (isError) {
-      return "Unable to load attractions from the API.";
-    }
-    if (isLoading && !attractions) {
-      return "Loading attractions...";
-    }
-    return "Allow camera access when prompted, then point your device at an AR marker.";
-  }, [error, isError, isLoading, attractions, ready]);
-
   return (
     <div className="ar-experience ar-marker-page">
-      {hintContent && <div className="hint">{hintContent}</div>}
-
       <header className="ar-header">
         <h1>Echoes of Eternity AR</h1>
       </header>
 
-      <video id="video" autoplay muted loop playsinline class="bottom-video"></video>
+      <video
+        ref={videoRef}
+        id="video"
+        className="bottom-video"
+        autoPlay
+        muted
+        loop
+        playsInline
+        controls={false}
+      />
 
-      <a-scene 
-        vr-mode-ui="enabled: false" 
-        embedded 
-        renderer="logarithmicDepthBuffer: true; precision: mediump"
-        arjs="sourceType: webcam; debugUIEnabled: false;">
-
+      <a-scene
+        ref={sceneRef as React.MutableRefObject<any>}
+        embedded
+        vr-mode-ui="enabled: false"
+        renderer="logarithmicDepthBuffer: true; precision: medium;"
+        arjs="sourceType: webcam; debugUIEnabled: false;"
+      >
         <a-assets>
-          <video id="video-asset" src="" preload="none" crossorigin="anonymous"></video>
+          <video
+            id="video-asset"
+            src=""
+            preload="none"
+            crossOrigin="anonymous"
+            autoPlay
+            playsInline
+            loop
+          />
         </a-assets>
-
-        <a-entity id="markerRoot"></a-entity>
-
-        <a-entity camera></a-entity>
+        <a-entity ref={markerRootRef as React.MutableRefObject<any>} />
+        <a-camera camera />
       </a-scene>
 
       <Link to="/" className="back-btn" aria-label="Back to home">
