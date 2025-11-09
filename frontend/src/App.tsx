@@ -5,7 +5,6 @@ import { LoadingScreen } from "./components/LoadingScreen";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const MarkerPage = lazy(() => import("./pages/MarkerPage"));
-const ImagePage = lazy(() => import("./pages/ImagePage"));
 const LocationPage = lazy(() => import("./pages/LocationPage"));
 const AdminPage = lazy(() => import("./pages/AdminPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
@@ -18,7 +17,6 @@ function App(): JSX.Element {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/ar/marker" element={<MarkerPage />} />
-          <Route path="/ar/image" element={<ImagePage />} />
           <Route path="/ar/location" element={<LocationPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />

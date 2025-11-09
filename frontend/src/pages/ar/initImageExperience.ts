@@ -1,6 +1,8 @@
 import type { Attraction } from "../../types/attraction";
 import { normalizeAssetPath } from "../../utils/assetPaths";
-import { createVideoAsset, ensureAssets, playVideo, type Metrics } from "./videoUtils";
+import { createVideoAsset, ensureAssets, attachVideoPlayback, type Metrics } from "./videoUtils";
+import { setupArViewport } from "./viewport";
+import { waitForArSystem } from "./waitForArSystem";
 
 type ImageExperienceOptions = {
   attractions: Attraction[];
@@ -42,82 +44,113 @@ export function initImageExperience({
   requestQualityOnDemand();
 
   const assetsEl = ensureAssets(scene);
-  const cleanupFns: Array<() => void> = [];
+  const cleanupFns: Array<() => void> = [setupArViewport(scene, uiVideo ?? undefined)];
+  let cancelled = false;
 
-  const relevantAttractions = attractions.filter(
-    (attraction) => attraction.imageNFT?.nftBaseUrl && attraction.videoUrl,
-  );
-
-  relevantAttractions.forEach((attraction) => {
-    const videoEl = createVideoAsset(assetsEl, attraction);
-    const markerEl = document.createElement("a-nft");
-    markerEl.setAttribute("type", "nft");
-    const nftUrl = normalizeAssetPath(attraction.imageNFT!.nftBaseUrl);
-    if (!nftUrl) {
-      console.warn(`NFT URL missing or invalid for attraction ${attraction.id}`);
+  const run = async () => {
+    await waitForArSystem(scene);
+    if (cancelled) {
       return;
     }
-    markerEl.setAttribute("url", nftUrl);
-    markerEl.setAttribute("smooth", "true");
-    markerEl.setAttribute("smoothCount", "10");
-    markerEl.setAttribute("smoothTolerance", "0.01");
-    markerEl.setAttribute("smoothThreshold", "5");
-    markerEl.setAttribute("emitevents", "true");
-    markerEl.setAttribute("data-attraction-id", attraction.id);
 
-    const plane = document.createElement("a-video");
-    plane.setAttribute("width", "1.6");
-    plane.setAttribute("height", "0.9");
-    plane.setAttribute("position", "0 0.6 0");
-    plane.setAttribute("rotation", "-90 0 0");
-    plane.setAttribute("src", `#${videoEl.id}`);
-    markerEl.appendChild(plane);
+    const relevantAttractions = attractions.filter(
+      (attraction) => attraction.imageNFT?.nftBaseUrl && attraction.videoUrl,
+    );
 
-    nftRoot.appendChild(markerEl);
+    relevantAttractions.forEach((attraction) => {
+      if (cancelled) {
+        return;
+      }
 
-    let loaded = false;
+      const videoEl = createVideoAsset(assetsEl, attraction);
+      const markerEl = document.createElement("a-nft");
+      markerEl.setAttribute("type", "nft");
+      const nftUrl = normalizeAssetPath(attraction.imageNFT!.nftBaseUrl);
+      if (!nftUrl) {
+        console.warn(`NFT URL missing or invalid for attraction ${attraction.id}`);
+        return;
+      }
+      markerEl.setAttribute("url", nftUrl);
+      markerEl.setAttribute("smooth", "true");
+      markerEl.setAttribute("smoothCount", "10");
+      markerEl.setAttribute("smoothTolerance", "0.01");
+      markerEl.setAttribute("smoothThreshold", "5");
+      markerEl.setAttribute("emitevents", "true");
+      markerEl.setAttribute("data-attraction-id", attraction.id);
 
-    const onMarkerFound = () => {
-      metrics.recordAttractionView(attraction.id);
-      if (!loaded) {
-        const videoSrc = normalizeAssetPath(attraction.videoUrl);
-        if (!videoSrc) {
-          console.warn(`Video URL missing or invalid for attraction ${attraction.id}`);
+      const plane = document.createElement("a-video");
+      plane.setAttribute("width", "1.6");
+      plane.setAttribute("height", "0.9");
+      plane.setAttribute("position", "0 0.6 0");
+      plane.setAttribute("rotation", "-90 0 0");
+      plane.setAttribute("src", `#${videoEl.id}`);
+      markerEl.appendChild(plane);
+
+      nftRoot.appendChild(markerEl);
+
+      let loaded = false;
+      let releasePlayback: (() => void) | undefined;
+
+      const onMarkerFound = () => {
+        if (cancelled) {
           return;
         }
-        videoEl.src = videoSrc;
-        if (uiVideo) {
-          uiVideo.src = videoSrc;
-          uiVideo.loop = true;
-          uiVideo.classList.add("visible");
+        metrics.recordAttractionView(attraction.id);
+        if (!loaded) {
+          const videoSrc = normalizeAssetPath(attraction.videoUrl);
+          if (!videoSrc) {
+            console.warn(`Video URL missing or invalid for attraction ${attraction.id}`);
+            return;
+          }
+          videoEl.setAttribute("src", videoSrc);
+          videoEl.src = videoSrc;
+          if (uiVideo) {
+            uiVideo.src = videoSrc;
+            uiVideo.load();
+            uiVideo.loop = true;
+            uiVideo.muted = false;
+            uiVideo.classList.add("visible");
+          }
+          loaded = true;
         }
-        loaded = true;
-      }
-      playVideo(videoEl, uiVideo, attraction.id, metrics);
-    };
+        releasePlayback?.();
+        releasePlayback = attachVideoPlayback({
+          primary: videoEl,
+          overlay: uiVideo ?? undefined,
+          id: attraction.id,
+          metrics,
+        });
+      };
 
-    const onMarkerLost = () => {
-      videoEl.pause();
-      videoEl.currentTime = 0;
-      if (uiVideo) {
-        uiVideo.pause();
-        uiVideo.currentTime = 0;
-        uiVideo.classList.remove("visible");
-      }
-    };
+      const onMarkerLost = () => {
+        releasePlayback?.();
+        releasePlayback = undefined;
+        videoEl.pause();
+        videoEl.currentTime = 0;
+        if (uiVideo) {
+          uiVideo.pause();
+          uiVideo.currentTime = 0;
+          uiVideo.classList.remove("visible");
+        }
+      };
 
-    markerEl.addEventListener("markerFound", onMarkerFound);
-    markerEl.addEventListener("markerLost", onMarkerLost);
+      markerEl.addEventListener("markerFound", onMarkerFound);
+      markerEl.addEventListener("markerLost", onMarkerLost);
 
-    cleanupFns.push(() => {
-      markerEl.removeEventListener("markerFound", onMarkerFound);
-      markerEl.removeEventListener("markerLost", onMarkerLost);
-      markerEl.remove();
-      videoEl.remove();
+      cleanupFns.push(() => {
+        releasePlayback?.();
+        markerEl.removeEventListener("markerFound", onMarkerFound);
+        markerEl.removeEventListener("markerLost", onMarkerLost);
+        markerEl.remove();
+        videoEl.remove();
+      });
     });
-  });
+  };
+
+  run();
 
   return () => {
+    cancelled = true;
     cleanupFns.forEach((fn) => fn());
   };
 }

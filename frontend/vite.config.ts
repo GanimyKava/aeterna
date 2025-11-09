@@ -3,6 +3,11 @@ import path from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+const backendHost = process.env.VITE_BACKEND_HOST ?? process.env.BACKEND_HOST ?? "localhost";
+const backendPort = process.env.VITE_BACKEND_PORT ?? process.env.BACKEND_PORT ?? "8000";
+const backendProtocol = process.env.VITE_BACKEND_PROTOCOL ?? process.env.BACKEND_PROTOCOL ?? "http";
+const backendTarget = `${backendProtocol}://${backendHost}:${backendPort}`;
+
 function resolveHttpsConfig(): false | { key: Buffer; cert: Buffer } {
   try {
     const certDir = path.resolve(__dirname, "certs");
@@ -30,32 +35,32 @@ export default defineConfig({
     https: resolveHttpsConfig(),
     proxy: {
       "/api": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
       "/analytics-chat": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
       "/time-weave": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
         ws: true,
       },
       "/assets": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
       "/images": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
       "/styles": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
       "/data": {
-        target: "http://localhost:8000",
+        target: backendTarget,
         changeOrigin: true,
       },
     },

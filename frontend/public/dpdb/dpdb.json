@@ -1,0 +1,26 @@
+{
+  "devices": [
+    {
+      "type": "viewer",
+      "name": "Generic Viewer",
+      "resolutions": [],
+      "params": {
+        "left-eye": {
+          "center-x": 0.25,
+          "center-y": 0.5,
+          "screen-to-lens-distance": 0.037,
+          "lens-separation": 0.062,
+          "alignment": 0.0,
+          "field-of-view-angles": [40, 40, 40, 40],
+          "distortion-coefficients": [0.34, 0.55]
+        },
+        "right-eye": {
+          "center-x": 0.75,
+          "center-y": 0.5
+        }
+      }
+    }
+  ],
+  "aliases": {}
+}
+

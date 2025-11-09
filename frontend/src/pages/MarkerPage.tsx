@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAttractions } from "../hooks/useAttractions";
 import { useMetrics } from "../hooks/useMetrics";
@@ -50,26 +50,46 @@ function MarkerPage(): JSX.Element {
     };
   }, [ready, attractions, recordVisit, recordAttractionView, recordVideoPlay]);
 
+  const hintContent = useMemo(() => {
+    if (!ready) {
+      return "Loading AR runtime...";
+    }
+    if (error) {
+      return `Failed to load AR scripts: ${error}`;
+    }
+    if (isError) {
+      return "Unable to load attractions from the API.";
+    }
+    if (isLoading && !attractions) {
+      return "Loading attractions...";
+    }
+    return "Allow camera access when prompted, then point your device at an AR marker.";
+  }, [error, isError, isLoading, attractions, ready]);
+
   return (
     <div className="ar-experience ar-marker-page">
-      {!ready && <div className="hint">Loading AR runtime...</div>}
-      {error && <div className="hint">Failed to load AR scripts: {error}</div>}
-      {isError && <div className="hint">Unable to load attractions from the API.</div>}
-      {isLoading && !attractions && <div className="hint">Loading attractions...</div>}
+      {hintContent && <div className="hint">{hintContent}</div>}
 
-      <a-scene
-        ref={sceneRef as React.MutableRefObject<any>}
-        embedded
-        vr-mode-ui="enabled: false"
-        renderer="logarithmicDepthBuffer: true; precision: medium;"
-        arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-      >
-        <a-assets />
-        <a-entity ref={markerRootRef as React.MutableRefObject<any>} />
-        <a-entity camera />
+      <header className="ar-header">
+        <h1>Echoes of Eternity AR</h1>
+      </header>
+
+      <video id="video" autoplay muted loop playsinline class="bottom-video"></video>
+
+      <a-scene 
+        vr-mode-ui="enabled: false" 
+        embedded 
+        renderer="logarithmicDepthBuffer: true; precision: mediump"
+        arjs="sourceType: webcam; debugUIEnabled: false;">
+
+        <a-assets>
+          <video id="video-asset" src="" preload="none" crossorigin="anonymous"></video>
+        </a-assets>
+
+        <a-entity id="markerRoot"></a-entity>
+
+        <a-entity camera></a-entity>
       </a-scene>
-
-      <video ref={videoRef} id="video" className="bottom-video" playsInline controls={false} />
 
       <Link to="/" className="back-btn" aria-label="Back to home">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

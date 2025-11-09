@@ -43,7 +43,7 @@ req_extensions = v3_req
 prompt = no
 
 [req_distinguished_name]
-CN = localhost
+CN = 10.0.0.138
 
 [v3_req]
 subjectAltName = @alt_names
@@ -51,6 +51,7 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = localhost
 IP.1 = 127.0.0.1
+IP.2 = 10.0.0.138
 EOF
 
 openssl genrsa -out "${KEY_FILE}" 2048

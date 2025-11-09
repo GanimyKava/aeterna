@@ -3,43 +3,40 @@ import styles from "./HelpPage.module.css";
 
 const sections = [
   {
-    icon: "📷",
-    title: "Image-based AR",
-    steps: [
-      { title: "Open the Image AR mode", description: "Select “Image-based AR” from the home navigation." },
-      { title: "Allow camera access", description: "Grant permission when prompted so image tracking can start." },
-      {
-        title: "Point at trained imagery",
-        description:
-          "Aim your camera at Uluru, MCG, or other trained posters. Keep the artwork centred and steady for best tracking.",
-        examples: [
-          { src: "/images/Uluru_Australia.jpg", label: "Uluru (Example)" },
-          { src: "/images/MCG_Australia.jpg", label: "MCG (Example)" },
-        ],
-      },
-      {
-        title: "Immerse in the story",
-        description: "When the image locks, spatial video overlays and UI playback at the bottom of the screen.",
-      },
-    ],
-    tip: "Ensure the scene is well lit and avoid glare or reflections on the image.",
-  },
-  {
     icon: "🎯",
     title: "Marker-based AR",
     steps: [
-      { title: "Launch the Marker AR mode", description: "From the home screen choose “Marker-based AR”." },
-      { title: "Allow camera access", description: "The camera feed powers realtime marker detection." },
       {
-        title: "Show compatible markers",
-        description: "Use official Echoes patterns, standard Hiro/Kanji markers, or configured barcodes.",
+        title: "Launch Marker AR",
+        description:
+          "From the home screen choose “Marker-based AR”. This loads the AR.js marker tracker and downloads the calibration data.",
       },
       {
-        title: "Stay aligned",
-        description: "Keep the marker in frame to maintain stable playback and synced overlays.",
+        title: "Allow camera access",
+        description:
+          "Grant permission when prompted. Without a live camera feed the marker reader can’t lock onto patterns.",
+      },
+      {
+        title: "Prepare your marker",
+        description:
+          "Use official Echoes markers, the default Hiro/Kanji presets, or your configured barcode pattern. Keep the print flat and crease-free.",
+        examples: [
+          { src: "/images/pattern-Uluru_Australia.png", label: "Uluru (Example)" },
+          { src: "/images/pattern-MCG_Australia.png", label: "MCG (Example)" },
+        ],
+      },
+      {
+        title: "Frame and focus",
+        description:
+          "Hold the marker 30–60 cm from the device, keep it well lit, and centre it on screen. Let the autofocus settle before moving.",
+      },
+      {
+        title: "Maintain lock",
+        description:
+          "Move slowly and keep the entire marker visible. If tracking flickers, pause and re-centre the card to resume smooth playback.",
       },
     ],
-    tip: "Print markers on matte stock with high contrast. Hold them flat in consistent lighting.",
+    tip: "Print markers on matte stock with high contrast, avoid glossy laminates, and brief guests to keep the marker parallel to the camera.",
   },
   {
     icon: "📍",

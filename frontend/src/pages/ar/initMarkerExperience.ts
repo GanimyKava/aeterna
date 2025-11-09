@@ -1,6 +1,8 @@
 import type { Attraction } from "../../types/attraction";
-import { createVideoAsset, ensureAssets, playVideo, type Metrics } from "./videoUtils";
+import { createVideoAsset, ensureAssets, attachVideoPlayback, type Metrics } from "./videoUtils";
 import { normalizeAssetPath } from "../../utils/assetPaths";
+import { setupArViewport } from "./viewport";
+import { waitForArSystem } from "./waitForArSystem";
 
 type MarkerExperienceOptions = {
   attractions: Attraction[];
@@ -42,73 +44,104 @@ export function initMarkerExperience({
   requestQualityOnDemand();
 
   const assetsEl = ensureAssets(scene);
-  const cleanupFns: Array<() => void> = [];
+  const cleanupFns: Array<() => void> = [setupArViewport(scene, uiVideo ?? undefined)];
+  let cancelled = false;
 
-  const relevantAttractions = attractions.filter(
-    (attraction) => attraction.marker && attraction.videoUrl,
-  );
+  const run = async () => {
+    await waitForArSystem(scene);
+    if (cancelled) {
+      return;
+    }
 
-  relevantAttractions.forEach((attraction) => {
-    const videoEl = createVideoAsset(assetsEl, attraction);
+    const relevantAttractions = attractions.filter(
+      (attraction) => attraction.marker && attraction.videoUrl,
+    );
 
-    const markerEl = document.createElement("a-marker");
-    configureMarker(markerEl, attraction);
+    relevantAttractions.forEach((attraction) => {
+      if (cancelled) {
+        return;
+      }
 
-    markerEl.setAttribute("data-attraction-id", attraction.id);
+      const videoEl = createVideoAsset(assetsEl, attraction);
 
-    const plane = document.createElement("a-video");
-    plane.setAttribute("width", "1.6");
-    plane.setAttribute("height", "0.9");
-    plane.setAttribute("position", "0 0.5 0");
-    plane.setAttribute("rotation", "-90 0 0");
-    plane.setAttribute("src", `#${videoEl.id}`);
+      const markerEl = document.createElement("a-marker");
+      configureMarker(markerEl, attraction);
 
-    markerEl.appendChild(plane);
-    markerRoot.appendChild(markerEl);
+      markerEl.setAttribute("data-attraction-id", attraction.id);
 
-    let loaded = false;
+      const plane = document.createElement("a-video");
+      plane.setAttribute("width", "1.6");
+      plane.setAttribute("height", "0.9");
+      plane.setAttribute("position", "0 0.5 0");
+      plane.setAttribute("rotation", "-90 0 0");
+      plane.setAttribute("src", `#${videoEl.id}`);
 
-    const onMarkerFound = () => {
-      metrics.recordAttractionView(attraction.id);
-      if (!loaded && attraction.videoUrl) {
-        const videoSrc = normalizeAssetPath(attraction.videoUrl);
-        if (!videoSrc) {
-          console.warn(`Video URL missing or invalid for attraction ${attraction.id}`);
+      markerEl.appendChild(plane);
+      markerRoot.appendChild(markerEl);
+
+      let loaded = false;
+      let releasePlayback: (() => void) | undefined;
+
+      const onMarkerFound = () => {
+        if (cancelled) {
           return;
         }
-        videoEl.src = videoSrc;
-        if (uiVideo) {
-          uiVideo.src = videoSrc;
-          uiVideo.loop = true;
-          uiVideo.classList.add("visible");
+        metrics.recordAttractionView(attraction.id);
+        if (!loaded && attraction.videoUrl) {
+          const videoSrc = normalizeAssetPath(attraction.videoUrl);
+          if (!videoSrc) {
+            console.warn(`Video URL missing or invalid for attraction ${attraction.id}`);
+            return;
+          }
+          videoEl.setAttribute("src", videoSrc);
+          videoEl.src = videoSrc;
+          if (uiVideo) {
+            uiVideo.src = videoSrc;
+            uiVideo.load();
+            uiVideo.loop = true;
+            uiVideo.muted = false;
+            uiVideo.classList.add("visible");
+          }
+          loaded = true;
         }
-        loaded = true;
-      }
-      playVideo(videoEl, uiVideo, attraction.id, metrics);
-    };
+        releasePlayback?.();
+        releasePlayback = attachVideoPlayback({
+          primary: videoEl,
+          overlay: uiVideo ?? undefined,
+          id: attraction.id,
+          metrics,
+        });
+      };
 
-    const onMarkerLost = () => {
-      videoEl.pause();
-      videoEl.currentTime = 0;
-      if (uiVideo) {
-        uiVideo.pause();
-        uiVideo.currentTime = 0;
-        uiVideo.classList.remove("visible");
-      }
-    };
+      const onMarkerLost = () => {
+        releasePlayback?.();
+        releasePlayback = undefined;
+        videoEl.pause();
+        videoEl.currentTime = 0;
+        if (uiVideo) {
+          uiVideo.pause();
+          uiVideo.currentTime = 0;
+          uiVideo.classList.remove("visible");
+        }
+      };
 
-    markerEl.addEventListener("markerFound", onMarkerFound);
-    markerEl.addEventListener("markerLost", onMarkerLost);
+      markerEl.addEventListener("markerFound", onMarkerFound);
+      markerEl.addEventListener("markerLost", onMarkerLost);
 
-    cleanupFns.push(() => {
-      markerEl.removeEventListener("markerFound", onMarkerFound);
-      markerEl.removeEventListener("markerLost", onMarkerLost);
-      markerEl.remove();
-      videoEl.remove();
+      cleanupFns.push(() => {
+        releasePlayback?.();
+        markerEl.removeEventListener("markerFound", onMarkerFound);
+        markerEl.removeEventListener("markerLost", onMarkerLost);
+        markerEl.remove();
+        videoEl.remove();
+      });
     });
-  });
+  };
+
+  run();
 
   return () => {
+    cancelled = true;
     cleanupFns.forEach((fn) => fn());
   };
 }

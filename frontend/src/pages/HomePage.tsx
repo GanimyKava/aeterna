@@ -9,14 +9,6 @@ const MarkerIcon = () => (
   </svg>
 );
 
-const ImageIcon = () => (
-  <svg className={styles.cardIcon} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="16" rx="2.5" />
-    <path d="M3 16.5 9.25 11l4.5 3.75L21 9" />
-    <circle cx="9" cy="8" r="1.8" />
-  </svg>
-);
-
 const LocationIcon = () => (
   <svg className={styles.cardIcon} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
     <path d="M5 10a7 7 0 0 1 14 0c0 5-7 11-7 11S5 15 5 10Z" />
@@ -52,12 +44,6 @@ const arModes = [
     description: "Point your device at a poster or pattern marker to unlock immersive video history.",
     to: "/ar/marker",
     icon: <MarkerIcon />,
-  },
-  {
-    title: "Image NFT AR",
-    description: "Advanced NFT image tracking anchors content to landmark artwork and signage.",
-    to: "/ar/image",
-    icon: <ImageIcon />,
   },
   {
     title: "Location AR",

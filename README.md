@@ -180,6 +180,24 @@ docker compose up --build
 - Trust `frontend/certs/root/rootCA.pem` in your browser for warning-free HTTPS.
 - Videos, markers, NFT packs, and imagery live under `backend/store/assets/` and `backend/store/images/`, surfaced via `/assets` and `/images`.
 
+#### 🔁 Live-Reload Dev Stack (Compose v2.22+)
+- Automatically watches React/TypeScript and FastAPI code for changes without restarting containers.
+- Uses FastAPI `uvicorn --reload` on port `8000` and Vite’s dev server served over **HTTPS** (container port `5173`, exposed as host port `443`).
+
+```bash
+# one-time (regenerate certs if you haven't already)
+./frontend/generate-self-signed.sh
+
+# run the hot-reload stack
+sudo docker compose -f docker-compose.dev.yml up
+```
+
+- Running on host port `443` typically requires elevated privileges (use `sudo` on Linux/macOS, or ensure port 443 is available on Windows).
+- The Vite dev server loads the self-signed certs from `frontend/certs`; trust `frontend/certs/root/rootCA.pem` on any devices you test with to avoid browser warnings.
+- Vite proxies API/asset requests to the backend container (configured via `VITE_BACKEND_HOST=backend` / `VITE_BACKEND_PORT=8000`).
+- Changes under `frontend/` and `backend/app` sync straight into the dev containers; Vite + Uvicorn reload automatically.
+- Stop with `CTRL+C`. No need to rebuild after each edit.
+
 ### Standalone Containers
 - **Frontend**
   ```bash

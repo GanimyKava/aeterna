@@ -23,39 +23,96 @@ export function createVideoAsset(assets: HTMLElement, attraction: Attraction): H
   video.setAttribute("crossorigin", "anonymous");
   video.setAttribute("playsinline", "true");
   video.setAttribute("loop", "true");
+  video.setAttribute("autoplay", "true");
   video.muted = false;
   assets.appendChild(video);
   return video;
 }
 
-export function playVideo(
-  videoEl: HTMLVideoElement,
-  uiVideo: HTMLVideoElement | null,
-  id: string,
-  metrics: Metrics,
-): void {
-  const attempt = (video: HTMLVideoElement, muted = false): Promise<void> => {
+type PlaybackOptions = {
+  primary: HTMLVideoElement;
+  overlay?: HTMLVideoElement | null;
+  id: string;
+  metrics: Metrics;
+};
+
+export function attachVideoPlayback({ primary, overlay, id, metrics }: PlaybackOptions): () => void {
+  let disposed = false;
+  let recorded = false;
+
+  const attempt = (video: HTMLVideoElement, muted = false): void => {
+    if (disposed) return;
+
     video.muted = muted;
-    return video
-      .play()
-      .then(() => {
-        metrics.recordVideoPlay(id);
-        if (uiVideo && video === videoEl) {
-          uiVideo.muted = muted;
-        }
-      })
-      .catch((error) => {
-        if (error instanceof DOMException && error.name === "NotAllowedError" && !muted) {
-          return attempt(video, true);
-        }
-        console.warn("AR video playback blocked", error);
-        return Promise.resolve();
-      });
+    const playPromise = video.play();
+
+    if (playPromise?.then) {
+      playPromise
+        .then(() => {
+          if (video === primary && !recorded) {
+            recorded = true;
+            metrics.recordVideoPlay(id);
+          }
+          if (video === overlay && overlay) {
+            overlay.muted = muted;
+          }
+          if (muted && video !== overlay) {
+            window.setTimeout(() => {
+              if (!disposed) {
+                video.muted = false;
+              }
+            }, 160);
+          }
+        })
+        .catch((error: unknown) => {
+          if (error instanceof DOMException && error.name === "NotAllowedError" && !muted) {
+            attempt(video, true);
+            return;
+          }
+          if (import.meta.env.DEV) {
+            console.warn("AR video playback blocked", error);
+          }
+        });
+    }
   };
 
-  attempt(videoEl);
-  if (uiVideo) {
-    attempt(uiVideo);
-  }
+  const tick = () => {
+    attempt(primary, false);
+    if (overlay) {
+      attempt(overlay, false);
+    }
+  };
+
+  const listeners: Array<{ target: HTMLVideoElement; type: keyof HTMLVideoElementEventMap; handler: () => void }> = [];
+
+  const register = (target: HTMLVideoElement, type: keyof HTMLVideoElementEventMap) => {
+    const handler = () => tick();
+    target.addEventListener(type, handler, { once: false });
+    listeners.push({ target, type, handler });
+  };
+
+  ["loadeddata", "canplay", "canplaythrough"].forEach((event) => {
+    register(primary, event as keyof HTMLVideoElementEventMap);
+    if (overlay) {
+      register(overlay, event as keyof HTMLVideoElementEventMap);
+    }
+  });
+
+  [0, 160, 400, 800].forEach((delay) => {
+    window.setTimeout(() => {
+      if (!disposed) {
+        tick();
+      }
+    }, delay);
+  });
+
+  tick();
+
+  return () => {
+    disposed = true;
+    listeners.forEach(({ target, type, handler }) => {
+      target.removeEventListener(type, handler);
+    });
+  };
 }
 
