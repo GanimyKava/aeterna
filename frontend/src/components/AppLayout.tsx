@@ -12,6 +12,7 @@ const navItems = [
   { to: "/ar/location", label: "Location AR" },
   { to: "/admin", label: "Admin" },
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/analytics-chat", label: "Analytics Chat" },
   { to: "/help", label: "Help" },
 ];
 

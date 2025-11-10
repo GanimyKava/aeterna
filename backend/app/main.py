@@ -12,6 +12,7 @@ from .config import get_settings
 from .database import Base, engine, get_session
 from .initial_data import load_yaml_attractions
 from . import crud, schemas
+from .socketio_app import SOCKET_MOUNT_PATH, socket_app
 
 settings = get_settings()
 
@@ -50,6 +51,7 @@ app.mount("/images", StaticFiles(directory=store_root / "images"), name="images"
 data_mounts = StaticFiles(directory=store_root / "data")
 app.mount("/data", data_mounts, name="data")
 app.mount("/api/data", data_mounts, name="data-api")
+app.mount(SOCKET_MOUNT_PATH, socket_app)
 
 
 def mount_frontend(app_directory: Path) -> None:
@@ -65,7 +67,17 @@ def mount_frontend(app_directory: Path) -> None:
 
     app.mount("/", StaticFiles(directory=build_dir, html=True), name="frontend")
 
-    excluded_prefixes = ("api/", "api", "analytics-chat", "time-weave", "assets", "images", "styles", "data")
+    excluded_prefixes = (
+        "api/",
+        "api",
+        "analytics-chat",
+        "analytics-socket",
+        "time-weave",
+        "assets",
+        "images",
+        "styles",
+        "data",
+    )
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str) -> FileResponse:

@@ -34,6 +34,13 @@ Tourism experiences often lack the depth and engagement needed to truly connect 
 - **Efficient Resource Management**: Config-driven content loading from YAML/JSON
 - **Smooth Tracking**: Hysteresis and smoothing algorithms reduce flicker and jitter
 
+### 🤖 Time-Weave Analytics Chat (NEW)
+- **Companion Oracle**: `/analytics-chat` FastAPI route orchestrated by CAMARA MaaS (mock-first, production ready).
+- **Persona-Adaptive**: Priya, Jax, Lena, Mike, Amara, and Kabir personas tailor tone, media, and nudges.
+- **Realtime Sessioning**: Socket.IO namespace `/analytics-socket` streams proactive alerts into the chat UI.
+- **Rich Attachments**: Density overlays, itinerary CTAs, and AR previews render inline with accessible bubbles.
+- **Configurable**: Switch to live CAMARA credentials via `CAMARA_*` env vars; JWT persona enforcement via `JWT_SECRET`.
+
 ---
 
 ## 🚀 Telstra Hackathon Integration
@@ -164,6 +171,26 @@ The site becomes available at `https://localhost:8443`. Accept the certificate w
 3. A-Frame scenes bootstrap once AR.js scripts finish loading (`useArScripts` hook).
 4. Marker/image/location handlers lazily attach videos, request CAMARA QoD mocks, and stream metrics to Zustand.
 5. Admin Studio writes updates back to the API; dashboard fuses persisted metrics with synthetic growth projections.
+6. Analytics Chat page posts prompts to `/analytics-chat`, links the active session over `/analytics-socket`, and renders EchoBot’s MaaS responses + proactive nudges.
+
+---
+
+## 🔐 Persona Tokens & CAMARA Configuration
+
+- Six sample JWTs live in the frontend (`SAMPLE_TOKENS`) and align with persona seeds in `backend/store/data/personas.json`.
+- Backend validates tokens with `JWT_SECRET` (`time-weave-secret` by default) and merges persona traits into chat context.
+- CAMARA integration defaults to mock mode (`CAMARA_USE_MOCK=true`). Override to hit live MaaS endpoints:
+
+```bash
+export CAMARA_USE_MOCK=false
+export CAMARA_TOKEN_URL=https://operator.example.com/oauth2/token
+export CAMARA_CLIENT_ID=...
+export CAMARA_CLIENT_SECRET=...
+export CAMARA_MAAS_BASE_URL=https://maas.operator.example.com
+export CAMARA_MAAS_TENANT_ID=example-tenant
+```
+
+> When mock mode is disabled, MaaS orchestrator creates/updates knowledge bases and assistants per persona and relays live responses via Socket.IO.
 
 ---
 

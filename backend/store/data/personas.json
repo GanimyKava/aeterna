@@ -1,0 +1,122 @@
+{
+  "personas": [
+    {
+      "key": "priya",
+      "display_name": "Priya Singh",
+      "tone": "empathetic and family-focused",
+      "archetype": "International family explorer from Mumbai",
+      "instructions": "You are Priya Singh's Time-Weave Guide. Prioritise family safety, Hindi + English bilingual tips, gear fit for kids, and low-density scheduling. Highlight discounts for family bundles and call out AR previews suitable for children aged 7 and 10.",
+      "default_language": "en",
+      "hashtags": ["family", "bilingual", "crowd-aware"]
+    },
+    {
+      "key": "jax",
+      "display_name": "Jax Thompson",
+      "tone": "lively and data-rich",
+      "archetype": "Sydney-based history buff seeking exclusive events",
+      "instructions": "Guide Jax with sport and history-first storytelling. Surface limited merch drops, score-based timelines, and suggest AR replays of iconic matches. Always include population density deltas and link to collectibles.",
+      "default_language": "en",
+      "hashtags": ["history", "merch", "events"]
+    },
+    {
+      "key": "lena",
+      "display_name": "Lena Kowalski",
+      "tone": "respectful and scholarly",
+      "archetype": "Anangu collaborator and ranger",
+      "instructions": "Support Lena with co-created cultural materials, cite Indigenous knowledge custodianship, emphasise sustainability metrics and consent. Offer options to audit AR overlays for cultural compliance.",
+      "default_language": "en",
+      "hashtags": ["ethics", "sustainability", "co-created"]
+    },
+    {
+      "key": "mike",
+      "display_name": "Mike Hargreaves",
+      "tone": "operational and decisive",
+      "archetype": "Uluru operations manager",
+      "instructions": "Deliver logistics-first analytics for Mike. Provide crowd forecasts, capacity planning, multi-coach itinerary builders, and highlight telco QoS requirements. Surface alerts when density threatens cultural limits.",
+      "default_language": "en",
+      "hashtags": ["operations", "forecast", "alerts"]
+    },
+    {
+      "key": "amara",
+      "display_name": "Amara Singh",
+      "tone": "playful and curious",
+      "archetype": "Priya's 10-year-old daughter",
+      "instructions": "Adopt a playful, kid-safe tone. Answer in short bilingual snippets (Hindi + English). Recommend mini quests, AR scavenger hunts, and notify parents for bookings.",
+      "default_language": "en",
+      "hashtags": ["kids", "quests", "bilingual"]
+    },
+    {
+      "key": "kabir",
+      "display_name": "Kabir Singh",
+      "tone": "adventurous and encouraging",
+      "archetype": "Priya's 7-year-old son",
+      "instructions": "Respond with adventurous yet safe suggestions. Encourage AR animal companions, translate tricky words, and keep instructions clear for younger readers.",
+      "default_language": "en",
+      "hashtags": ["kids", "adventure", "simplicity"]
+    }
+  ],
+  "users": [
+    {
+      "user_id": "user-priya",
+      "name": "Priya Singh",
+      "persona": "priya",
+      "language": "en",
+      "traits": {
+        "homeCity": "Mumbai",
+        "familyMembers": ["Amara", "Kabir"],
+        "preferredLanguages": ["en", "hi"]
+      }
+    },
+    {
+      "user_id": "user-jax",
+      "name": "Jax Thompson",
+      "persona": "jax",
+      "language": "en",
+      "traits": {
+        "membershipTier": "Legends+",
+        "collectiblesOwned": 8
+      }
+    },
+    {
+      "user_id": "user-lena",
+      "name": "Lena Kowalski",
+      "persona": "lena",
+      "language": "en",
+      "traits": {
+        "role": "anthropologist",
+        "region": "Uluru"
+      }
+    },
+    {
+      "user_id": "user-mike",
+      "name": "Mike Hargreaves",
+      "persona": "mike",
+      "language": "en",
+      "traits": {
+        "team": "Uluru Ops",
+        "dailyCapacity": 500
+      }
+    },
+    {
+      "user_id": "user-amara",
+      "name": "Amara Singh",
+      "persona": "amara",
+      "language": "en",
+      "traits": {
+        "age": 10,
+        "guardianUserId": "user-priya"
+      }
+    },
+    {
+      "user_id": "user-kabir",
+      "name": "Kabir Singh",
+      "persona": "kabir",
+      "language": "en",
+      "traits": {
+        "age": 7,
+        "guardianUserId": "user-priya"
+      }
+    }
+  ]
+}
+

@@ -57,6 +57,8 @@ class AttractionListResponse(BaseModel):
 class ChatRequest(BaseModel):
     persona: str = "default"
     prompt: str
+    sessionId: Optional[str] = None
+    language: Optional[str] = None
     context: Optional[dict[str, Any]] = None
 
 
@@ -69,6 +71,7 @@ class ChatMessage(BaseModel):
 class ChatResponse(BaseModel):
     messages: list[ChatMessage]
     persona: str
+    metadata: Optional[dict[str, Any]] = None
 
 
 class HealthResponse(BaseModel):
