@@ -55,7 +55,8 @@
 }
 
 .primary,
-.secondary {
+.secondary,
+.tertiary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -88,6 +89,18 @@
   transform: translateY(-2px);
   background: rgba(36, 90, 158, 0.68);
   border-color: rgba(140, 206, 255, 0.78);
+}
+
+.tertiary {
+  background: transparent;
+  border: 1px dashed rgba(255, 216, 95, 0.7);
+  color: rgba(255, 245, 225, 0.92);
+}
+
+.tertiary:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 216, 95, 0.15);
+  border-style: solid;
 }
 
 .gridSection {
@@ -213,7 +226,8 @@
   }
 
   .primary,
-  .secondary {
+  .secondary,
+  .tertiary {
     width: 100%;
     justify-content: center;
   }

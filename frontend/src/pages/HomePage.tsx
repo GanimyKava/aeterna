@@ -30,6 +30,17 @@ const DashboardIcon = () => (
   </svg>
 );
 
+const ItineraryIcon = () => (
+  <svg className={styles.cardIcon} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 3h14v4H5z" />
+    <path d="M5 7l3 3 3-3" />
+    <path d="M5 21h14v-6H5z" />
+    <path d="M5 15l3-3 3 3" />
+    <path d="M18 7h1a2 2 0 0 1 2 2v6" />
+    <path d="M18 15h1a2 2 0 0 1 2 2v4" />
+  </svg>
+);
+
 const GuideIcon = () => (
   <svg className={styles.cardIcon} viewBox="0 0 24 24" fill="none" strokeLinecap="round" strokeLinejoin="round">
     <path d="M4 4h10l6 6v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z" />
@@ -54,6 +65,12 @@ const arModes = [
 ];
 
 const tools = [
+  {
+    title: "Plan Itineraries",
+    description: "Browse the top 50 sites by region with AR density insights and seasonal trip hacks.",
+    to: "/plan-itineraries",
+    icon: <ItineraryIcon />,
+  },
   {
     title: "Admin Studio",
     description: "Curate attractions, markers, and content in real time.",
@@ -87,8 +104,8 @@ function HomePage(): JSX.Element {
         <p className={styles.tagline}>Echoes of Eternity AR</p>
         <h1 className={styles.title}>Where Landmarks Remember</h1>
         <p className={styles.subtitle}>
-          Bring Australia’s icons to life with network-powered augmented reality. Choose an AR mode below or open the
-          operator toolkit to orchestrate dynamic experiences.
+          Bring Australia’s icons to life with network-powered augmented reality. Choose an AR mode below, map crowd-friendly itineraries,
+          or open the operator toolkit to orchestrate dynamic experiences.
         </p>
         <div className={styles.heroActions}>
           <Link to="/ar/marker" className={styles.primary}>
@@ -96,6 +113,9 @@ function HomePage(): JSX.Element {
           </Link>
           <Link to="/dashboard" className={styles.secondary}>
             View Analytics
+          </Link>
+          <Link to="/plan-itineraries" className={styles.tertiary}>
+            Plan Itineraries
           </Link>
         </div>
       </section>

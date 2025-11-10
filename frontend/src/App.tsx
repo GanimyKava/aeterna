@@ -10,6 +10,7 @@ const AdminPage = lazy(() => import("./pages/AdminPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const HelpPage = lazy(() => import("./pages/HelpPage"));
 const AnalyticsChatPage = lazy(() => import("./pages/AnalyticsChatPage"));
+const PlanItinerariesPage = lazy(() => import("./pages/PlanItineraries"));
 
 function App(): JSX.Element {
   return (
@@ -23,6 +24,7 @@ function App(): JSX.Element {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/help" element={<HelpPage />} />
           <Route path="/analytics-chat" element={<AnalyticsChatPage />} />
+          <Route path="/plan-itineraries" element={<PlanItinerariesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

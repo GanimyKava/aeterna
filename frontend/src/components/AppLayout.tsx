@@ -8,6 +8,7 @@ type AppLayoutProps = {
 
 const navItems = [
   { to: "/", label: "Home" },
+  { to: "/plan-itineraries", label: "Plan Itineraries" },
   { to: "/ar/marker", label: "Marker AR" },
   { to: "/ar/location", label: "Location AR" },
   { to: "/admin", label: "Admin" },
